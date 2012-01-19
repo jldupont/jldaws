@@ -1,0 +1,34 @@
+#!/usr/bin/env python
+"""
+    Executes a local script upon receiving a message on a specific Amazon SNS topic
+
+    Command Line:
+    
+        jldexec topic /path/to/script
+    
+
+    @author: Jean-Lou Dupont
+"""
+import os, sys, argparse
+op=os.path
+
+try:
+    import jldaws
+except:
+    ### must be in dev mode then    
+    this_dir=op.dirname(__file__)
+    lib_path=op.abspath(op.join(this_dir, ".."))
+    sys.path.insert(0, lib_path)
+    import jldaws
+
+DESC="Executes script based on SNS message received on a specific topic"
+
+
+def main():
+    parser=argparse.ArgumentParser(description=DESC)
+    parser.add_argument('topic',       nargs=1, help="Topic to subscribe to")
+    parser.add_argument('path_script', nargs=1, help="Filesystem path to script to execute")
+    args=parser.parse_args()
+    print args
+
+sys.exit(main())
