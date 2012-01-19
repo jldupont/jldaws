@@ -33,7 +33,6 @@ def main():
     try:
         import jldaws.do_setup
         import logging
-        
         import jldaws.do_checks
         
         parser=argparse.ArgumentParser(description=DESC)
