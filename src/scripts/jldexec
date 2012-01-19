@@ -9,7 +9,7 @@
 
     @author: Jean-Lou Dupont
 """
-import logging, os, sys, argparse
+import os, sys, argparse
 op=os.path
 
 try:
@@ -30,25 +30,28 @@ DEFAULTS={
           }
 
 def main():
-    import jldaws.do_checks
-    import jldaws.do_setup
-    
-    parser=argparse.ArgumentParser(description=DESC)
-    parser.add_argument('topic',       nargs=1, help="Topic to subscribe to")
-    parser.add_argument('module_name', nargs=1, help="Python module name to execute 'run' callable")
-    parser.add_argument('-p', type=int, dest="polling_interval", action="store", help="Polling interval in seconds", default=DEFAULTS["polling_interval"])
-    args=parser.parse_args()
-    
-    from jldaws.script_exec import run
-    run(args)
+    try:
+        import jldaws.do_setup
+        import logging
+        
+        import jldaws.do_checks
+        
+        parser=argparse.ArgumentParser(description=DESC)
+        parser.add_argument('topic',       nargs=1, help="Topic to subscribe to")
+        parser.add_argument('module_name', nargs=1, help="Python module name to execute 'run' callable")
+        parser.add_argument('-p', type=int, dest="polling_interval", action="store", help="Polling interval in seconds", default=DEFAULTS["polling_interval"])
+        args=parser.parse_args()
+        
+        from jldaws.script_exec import run
+        run(args)
 
-try:
-    sys.exit(main())
-    
-except KeyboardInterrupt:
-    logging.info("..Exiting")
-    sys.exit(0)##no probs
-    
-except Exception,e:
-    logging.error(str(e))
-    sys.exit(1)
+    except KeyboardInterrupt:
+        logging.info("..Exiting")
+        sys.exit(0)##no probs
+        
+    except Exception,e:
+        logging.error(str(e))
+        sys.exit(1)
+        
+
+sys.exit(main())

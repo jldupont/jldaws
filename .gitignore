@@ -12,3 +12,4 @@ war/
 *.sql3
 *.csv
 .gwt-log
+/dist
