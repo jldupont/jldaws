@@ -13,5 +13,6 @@ except:
 try:
     os.environ["AWS_ACCESS_KEY_ID"]
     os.environ["AWS_SECRET_ACCESS_KEY"]
+    os.environ["AWS_ACCOUNT_ID"]
 except Exception, e:
     raise Exception("* environment variable missing: %s" % str(e))

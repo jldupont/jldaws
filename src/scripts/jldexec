@@ -35,7 +35,7 @@ def main():
     
     parser=argparse.ArgumentParser(description=DESC)
     parser.add_argument('topic',       nargs=1, help="Topic to subscribe to")
-    parser.add_argument('path_script', nargs=1, help="Filesystem path to script to execute")
+    parser.add_argument('module_name', nargs=1, help="Python module name to execute 'run' callable")
     parser.add_argument('-p', type=int, dest="polling_interval", action="store", help="Polling interval", default=DEFAULTS["polling_interval"])
     args=parser.parse_args()
     
