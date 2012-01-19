@@ -9,7 +9,7 @@
 
     @author: Jean-Lou Dupont
 """
-import os, sys, argparse
+import logging, os, sys, argparse
 op=os.path
 
 try:
@@ -21,17 +21,22 @@ except:
     sys.path.insert(0, lib_path)
     import jldaws
 
-
+########################################################################
 
 DESC="Executes script based on SNS message received on a specific topic"
-
+DEFAULTS={
+          "polling_interval": 30
+          ,
+          }
 
 def main():
     import jldaws.do_checks
+    import jldaws.do_setup
     
     parser=argparse.ArgumentParser(description=DESC)
     parser.add_argument('topic',       nargs=1, help="Topic to subscribe to")
     parser.add_argument('path_script', nargs=1, help="Filesystem path to script to execute")
+    parser.add_argument('-p', type=int, dest="polling_interval", action="store", help="Polling interval", default=DEFAULTS["polling_interval"])
     args=parser.parse_args()
     
     from jldaws.script_exec import run
@@ -41,9 +46,9 @@ try:
     sys.exit(main())
     
 except KeyboardInterrupt:
-    print "..Exiting\n"
-    sys.exit(1)
+    logging.info("..Exiting")
+    sys.exit(0)##no probs
     
 except Exception,e:
-    sys.stderr.write(e.message+"\n")
+    logging.error(str(e))
     sys.exit(1)
