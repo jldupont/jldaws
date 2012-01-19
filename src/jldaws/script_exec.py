@@ -29,9 +29,9 @@ def run(args):
     except Exception,e:
         raise Exception("Creating queue '%s': %s" % (queue_name, str(e)))
         
-    logging.info("path_script:      %s" % args.path_script[0])
-    logging.info("queue_name:       %s" % queue_name)
-    logging.info("polling_interval: %s" % args.polling_interval)
+    logging.info("path_script=      %s" % args.path_script[0])
+    logging.info("queue_name=       %s" % queue_name)
+    logging.info("polling_interval= %s" % args.polling_interval)
     
     while True:
         try:
