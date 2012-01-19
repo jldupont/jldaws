@@ -1,0 +1,17 @@
+setup.py
+src/jldaws/__init__.py
+src/jldaws/do_checks.py
+src/jldaws/do_setup.py
+src/jldaws/script_exec.py
+src/jldaws/tools_date.py
+src/jldaws/tools_os.py
+src/jldaws/tools_sns.py
+src/jldaws/tools_sqs.py
+src/jldaws.egg-info/PKG-INFO
+src/jldaws.egg-info/SOURCES.txt
+src/jldaws.egg-info/dependency_links.txt
+src/jldaws.egg-info/not-zip-safe
+src/jldaws.egg-info/top_level.txt
+src/jldaws/mocks/__init__.py
+src/jldaws/mocks/echo.py
+src/scripts/jldexec

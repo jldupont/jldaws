@@ -5,6 +5,6 @@
     @author: jldupont
 """
 
-def run(msg):
+def run(queue_name, topic, msg):
     print msg
     return "ok"

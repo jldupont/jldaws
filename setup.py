@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 """
     Jean-Lou Dupont's AWS scripts
     
@@ -5,7 +6,7 @@
     @author: jldupont
 """
 __author__  ="Jean-Lou Dupont"
-__version__ ="0.1.0"
+__version__ ="0.1.1"
 
 
 from distutils.core import setup
@@ -20,7 +21,7 @@ setup(name=         'jldaws',
       url=          'http://www.systemical.com/doc/opensource/jldaws',
       package_dir=  {'': "src",},
       packages=     find_packages("src"),
-      scripts=      ['src/scripts/m3u2symlinks', 
+      scripts=      ['src/scripts/jldexec', 
                      ],
       package_data = {
                       '':[ "*.gif", "*.png", "*.jpg" ],

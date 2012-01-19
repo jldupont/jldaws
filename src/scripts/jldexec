@@ -4,7 +4,7 @@
 
     Command Line:
     
-        jldexec topic /path/to/script
+        jldexec [-p polling_interval] topic /path/to/script
     
 
     @author: Jean-Lou Dupont
@@ -36,7 +36,7 @@ def main():
     parser=argparse.ArgumentParser(description=DESC)
     parser.add_argument('topic',       nargs=1, help="Topic to subscribe to")
     parser.add_argument('module_name', nargs=1, help="Python module name to execute 'run' callable")
-    parser.add_argument('-p', type=int, dest="polling_interval", action="store", help="Polling interval", default=DEFAULTS["polling_interval"])
+    parser.add_argument('-p', type=int, dest="polling_interval", action="store", help="Polling interval in seconds", default=DEFAULTS["polling_interval"])
     args=parser.parse_args()
     
     from jldaws.script_exec import run

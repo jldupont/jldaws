@@ -7,8 +7,12 @@ import os
 try:
     import boto
 except:
-    raise Exception("* package 'boto' is required\n")
+    raise Exception("* package 'boto' is required - get it from Pypi\n")
 
+try:
+    import argparse
+except:
+    raise Exception("* package 'argparse' is necessary - get it from Pypi\n")
 
 try:
     os.environ["AWS_ACCESS_KEY_ID"]

@@ -10,18 +10,14 @@ from boto.exception import SQSDecodeError
 from boto.sqs.jsonmessage import JSONMessage
 
 from tools_sqs import gen_queue_name
+from tools_sns import build_topic_arn
 
-def process_msg(args, queue_name, mod, msg):
+def process_msg(args, queue_name, topic, mod, msg):
     
-    result=mod.run(msg.get_body())
+    result=mod.run(queue_name, topic, msg.get_body())
     if result is not None:
         logging.info("result: %s" % str(result))
         
-
-def build_topic_arn(conn, topic):
-    account_id=os.environ["AWS_ACCOUNT_ID"]
-    return 'arn:aws:sns:%s:%s:%s' % (conn.region.name, account_id, topic)
-
 
 def run(args):
     """
@@ -47,7 +43,7 @@ def run(args):
     if not callable(run):
         raise Exception("Can't call 'run' function of callable '%S'" % module_name)
 
-    logging.info("polling_interval= %s" % args.polling_interval)
+    logging.info("polling_interval= %s (seconds)" % args.polling_interval)
         
     # SETUP PRIVATE QUEUE
     try:
@@ -63,6 +59,7 @@ def run(args):
     
     topic=args.topic[0]
     topic_arn=build_topic_arn(conn, topic)
+    
     logging.info("topic=            %s" % topic)
     logging.info("topic_arn=        %s" % topic_arn)    
     
@@ -77,7 +74,7 @@ def run(args):
         try:
             msg=q.read()
             if msg is not None:
-                process_msg(args, queue_name, mod, msg)
+                process_msg(args, queue_name, topic, mod, msg)
                 q.delete_message(msg)
                 
         except SQSDecodeError:
