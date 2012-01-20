@@ -6,7 +6,7 @@
     @author: jldupont
 """
 __author__  ="Jean-Lou Dupont"
-__version__ ="0.1.1"
+__version__ ="0.2.0"
 
 
 from distutils.core import setup
@@ -21,7 +21,8 @@ setup(name=         'jldaws',
       url=          'http://www.systemical.com/doc/opensource/jldaws',
       package_dir=  {'': "src",},
       packages=     find_packages("src"),
-      scripts=      ['src/scripts/jldexec', 
+      scripts=      ['src/scripts/jldexec',
+                     'src/scripts/jlds3notify',  
                      ],
       package_data = {
                       '':[ "*.gif", "*.png", "*.jpg" ],

@@ -11,10 +11,11 @@ from boto.sqs.jsonmessage import JSONMessage
 
 from tools_sqs import gen_queue_name
 from tools_sns import build_topic_arn
+from tools_mod import call
 
-def process_msg(args, queue_name, topic, mod, msg):
+def process_msg(args, queue_name, topic, module_name, msg):
     
-    result=mod.run(queue_name, topic, msg.get_body())
+    result=call(module_name, "run", queue_name, topic, msg.get_body())
     if result is not None:
         logging.info("result: %s" % str(result))
         
@@ -25,24 +26,9 @@ def run(args):
     1. create private SQS queue
     2. subscribe queue to the specified 'topic'
     """
-    
-    # CHECK CALLABLE
     module_name=args.module_name[0]
-    try:
-        mod=importlib.import_module(module_name)
-    except:
-        raise Exception("Can't import module '%s'" % module_name)
-    
-    logging.info("module_name=      %s" % module_name)
-    
-    try:
-        run=getattr(mod, "run")
-    except:
-        raise Exception("Module '%s' doesn't have a 'run' function" % mod)
-    
-    if not callable(run):
-        raise Exception("Can't call 'run' function of callable '%S'" % module_name)
-
+   
+    logging.info("module_name=      %s" % module_name)    
     logging.info("polling_interval= %s (seconds)" % args.polling_interval)
         
     # SETUP PRIVATE QUEUE
@@ -74,7 +60,7 @@ def run(args):
         try:
             msg=q.read()
             if msg is not None:
-                process_msg(args, queue_name, topic, mod, msg)
+                process_msg(args, queue_name, topic, module_name, msg)
                 q.delete_message(msg)
                 
         except SQSDecodeError:

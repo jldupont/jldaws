@@ -14,8 +14,6 @@ def gen_queue_name():
     queue_name="ex_%s_%s" % (ts, uuid.uuid1())
     return queue_name
 
-    
-
 if __name__=="__main__":
     import doctest
     doctest.testmod()
