@@ -24,6 +24,7 @@ def run(args):
     module_name=args.module_name
     polling=args.polling_interval
     prefix=args.prefix
+    always=args.always
 
     info_dump(args._get_kwargs(), 20)
     
@@ -43,7 +44,7 @@ def run(args):
                 ndict=keys_to_dict(data)
                 changes=check_changes(cdict, ndict)
                 try:
-                    if len(changes)>0:
+                    if len(changes)>0 or always:
                         call(module_name, "run", bucket_name, prefix, keys=ndict, changes=changes)
                         cdict=ndict
                 except Exception, e:
