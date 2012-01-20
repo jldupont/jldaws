@@ -3,8 +3,12 @@ src/jldaws/__init__.py
 src/jldaws/do_checks.py
 src/jldaws/do_setup.py
 src/jldaws/script_exec.py
+src/jldaws/script_s3notify.py
 src/jldaws/tools_date.py
+src/jldaws/tools_logging.py
+src/jldaws/tools_mod.py
 src/jldaws/tools_os.py
+src/jldaws/tools_s3.py
 src/jldaws/tools_sns.py
 src/jldaws/tools_sqs.py
 src/jldaws.egg-info/PKG-INFO
@@ -15,3 +19,4 @@ src/jldaws.egg-info/top_level.txt
 src/jldaws/mocks/__init__.py
 src/jldaws/mocks/echo.py
 src/scripts/jldexec
+src/scripts/jlds3notify
