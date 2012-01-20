@@ -12,8 +12,8 @@
 
     'Run' function signature:
     
-        run(keys={}, changes=[])
-        
+        run(bucket_name, prefix, keys={}, changes=[])
+               
         where 'keys' is a dictionary with the key field being the S3 object name
          and the value field being a boto.s3.Key object
          

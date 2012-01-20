@@ -44,7 +44,7 @@ def run(args):
                 changes=check_changes(cdict, ndict)
                 try:
                     if len(changes)>0:
-                        call(module_name, "run", keys=ndict, changes=changes)
+                        call(module_name, "run", bucket_name, prefix, keys=ndict, changes=changes)
                         cdict=ndict
                 except Exception, e:
                     logging.error("calling 'run' function of module '%s': %s" %(module_name, str(e)))
