@@ -47,6 +47,7 @@ def run(args):
                     if len(changes)>0 or always:
                         call(module_name, "run", bucket_name, prefix, keys=ndict, changes=changes)
                         cdict=ndict
+                        logging.debug("success making the 'run' call")
                 except Exception, e:
                     logging.error("calling 'run' function of module '%s': %s" %(module_name, str(e)))
             except:
