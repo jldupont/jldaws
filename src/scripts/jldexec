@@ -4,7 +4,7 @@
 
     Command Line:
     
-        jldexec [-p polling_interval] topic /path/to/script
+        jldexec [-j] [-n] [-p polling_interval] topic /path/to/script
     
 
     @author: Jean-Lou Dupont

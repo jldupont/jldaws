@@ -21,3 +21,4 @@ src/jldaws/mocks/__init__.py
 src/jldaws/mocks/echo.py
 src/scripts/jldexec
 src/scripts/jlds3notify
+src/scripts/jldtxsqs
