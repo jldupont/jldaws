@@ -13,3 +13,4 @@ war/
 *.csv
 .gwt-log
 /dist
+*~
