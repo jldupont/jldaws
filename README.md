@@ -5,6 +5,7 @@ History
 =======
 
 0.2.2 :
+
 * addition of "jldrxsqs"
 * added parameter '-w' to jldrxsqs and jldtxsqs
 

@@ -21,5 +21,6 @@ src/jldaws.egg-info/top_level.txt
 src/jldaws/mocks/__init__.py
 src/jldaws/mocks/echo.py
 src/scripts/jldexec
+src/scripts/jldrxsqs
 src/scripts/jlds3notify
 src/scripts/jldtxsqs
