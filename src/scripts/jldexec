@@ -26,7 +26,7 @@ except:
 DESC="Executes script based on SNS message received on a specific topic"
 DEFAULTS={
           "polling_interval": 30
-          ,
+          ,"batch_size": 10
           }
 
 def main():
@@ -36,9 +36,12 @@ def main():
         import jldaws.do_checks
         
         parser=argparse.ArgumentParser(description=DESC)
-        parser.add_argument('topic',       nargs=1, help="Topic to subscribe to")
-        parser.add_argument('module_name', nargs=1, help="Python module name to execute 'run' callable")
+        parser.add_argument('topic',       type=str, help="Topic to subscribe to")
+        parser.add_argument('module_name', type=str, help="Python module name to execute 'run' callable OR 'None'")
         parser.add_argument('-p', type=int, dest="polling_interval", action="store", help="Polling interval in seconds", default=DEFAULTS["polling_interval"])
+        parser.add_argument('-j',             dest="enable_json",    action="store_true", help="Outputs JSON object to stdout")
+        #parser.add_argument('-a',             dest="enable_always",  action="store_true", help="Always output")
+        parser.add_argument('-n',          type=int, nargs=1, dest="batch_size",  action="store", help="Maximum message batch size to process per interval", default=DEFAULTS["batch_size"])
         args=parser.parse_args()
         
         from jldaws.script_exec import run

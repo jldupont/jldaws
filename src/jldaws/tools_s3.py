@@ -2,6 +2,7 @@
     Created on 2012-01-20
     @author: jldupont
 """
+import json
 import boto
 from boto.exception import S3ResponseError
 
@@ -29,6 +30,24 @@ def check_changes(ckeys, keys):
             changed.append(key)
     return changed
 
+def json_string(o):
+    try:
+        return json.dumps(o)
+    except:
+        return ""
+
+
+KEY_FIELDS=["content_type", "content_encoding", "etag", "last_modified", "storage_class"]
+def key_object_to_dict(key):
+    """
+    Expects a boto.s3.key.Key object type
+    """
+    d={}
+    for k in KEY_FIELDS:
+        d[k]=str(key.__dict__[k])
+        
+    return { key.name: d}
+    
 
 def bucket_status(bucket_name, prefix):
     
