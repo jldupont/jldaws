@@ -4,7 +4,7 @@
 
     Command Line:
     
-        jldrxsqs [-w] [-f] [-p polling_interval] [-n batch_size] queue_name
+        jldrxsqs [-e] [-w] [-f] [-p polling_interval] [-n batch_size] queue_name
     
         This command takes its input from an SQS queue and passes the received string to stdout
 
@@ -38,6 +38,7 @@ def main():
         
         parser=argparse.ArgumentParser(description=DESC)
         parser.add_argument('queue_name', type=str, help="SQS queue name to send to")
+        parser.add_argument('-e',         dest="propagate_error",  action="store_true", help="Propagate SQS error", default=False)        
         parser.add_argument('-w',         dest="format_any",  action="store_true", help="Any message format accepted i.e. not just JSON", default=False)        
         parser.add_argument('-f',         dest="flush_queue", action="store_true", help="Flush SQS queue at startup")
         parser.add_argument('-p',         dest="polling_interval", type=int, help="Polling interval (seconds)", default=DEFS["polling_interval"])

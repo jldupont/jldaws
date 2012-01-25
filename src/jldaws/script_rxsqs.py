@@ -2,12 +2,13 @@
     Created on 2012-01-19
     @author: jldupont
 """
-import logging, json, sys
+import logging, sys
 import boto
 from time import sleep
 
 from boto.sqs.jsonmessage import JSONMessage
 from boto.sqs.message     import RawMessage
+from boto.exception       import SQSError
 
 from tools_logging import info_dump
 
@@ -28,6 +29,7 @@ def run(args):
     batch_size=args.batch_size
     polling_interval=args.polling_interval
     format_any=args.format_any
+    propagate_error=args.propagate_error
    
     info_dump(args, 20)
    
@@ -56,7 +58,11 @@ def run(args):
         
         try:
             msgs=q.get_messages(num_messages=batch_size)
-        except:
+        except SQSError, e:
+            if propagate_error:
+                stdout('''{"error": "%s"}''' % str(e))
+            continue
+        except Exception:
             error_count=error_count+1
             if error_count<MAX_ERROR_COUNT:
                 logging.error("Can't decode received message")
