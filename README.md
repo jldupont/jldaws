@@ -1,8 +1,16 @@
 For more information, visit http://www.systemical.com/doc/opensource/jldaws
 
 
+Tests
+=====
+
+*nose* can be used to run tests.
+
+
 History
 =======
+
+0.2.3 : changed command-line format for 'jldrxsqs' and 'jldtxsqs'
 
 0.2.2 :
 

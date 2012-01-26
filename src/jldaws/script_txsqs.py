@@ -10,6 +10,8 @@ from boto.sqs.jsonmessage import JSONMessage
 from boto.sqs.message import RawMessage
 
 from tools_logging import info_dump
+from tools_sys import retry
+
 
 def stdout(s):
     try:
@@ -21,21 +23,25 @@ def stdout(s):
 
 def run(args):
     
-    queue_name=args.queue_name
+    queue_name=args.queue_name.strip()
     flush_queue=args.flush_queue
     format_any=args.format_any
+    retry_always=args.retry_always
    
-    info_dump(args, 20)
+    info_dump(vars(args), 20)
     
     # SETUP PRIVATE QUEUE
-    try:
+    def setup_private_queue():
         conn = boto.connect_sqs()
         q=conn.create_queue(queue_name)
         if not format_any:
             q.set_message_class(JSONMessage)
         else:
             q.set_message_class(RawMessage)
+        return q
         
+    try:
+        q=retry(setup_private_queue, always=retry_always)
     except Exception,e:
         raise Exception("Creating queue '%s': %s" % (queue_name, str(e)))
 
@@ -74,5 +80,9 @@ def run(args):
             try:
                 q.write(m)
             except Exception,e:
-                logging.error("Can't write to SQS queue - 2nd attempt in a row: %s" % e)
+                if retry_always:
+                    logging.error("Can't write to SQS queue - 2nd attempt in a row: %s" % e)
+                else:
+                    raise Exception("Writing to SQS queue")
+
         

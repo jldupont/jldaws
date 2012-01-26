@@ -5,7 +5,11 @@
 
     Command Line:
     
-        jldtxsqs [-w] [-f] queue_name
+        jldtxsqs [-w] [-f] -q queue_name
+        
+        OR
+        
+        jldtxsqs @config.txt
     
         This command takes its input from stdin and passes the received string to stdout + to SQS queue        
 
@@ -35,10 +39,11 @@ def main():
         import logging
         import jldaws.do_checks
         
-        parser=argparse.ArgumentParser(description=DESC)
-        parser.add_argument('queue_name', type=str, help="SQS queue name to send to")
-        parser.add_argument('-w',         dest="format_any",  action="store_true", help="Any message format accepted i.e. not just JSON", default=False)        
-        parser.add_argument('-f',         dest="flush_queue", action="store_true", help="Flush SQS queue at startup")
+        parser=argparse.ArgumentParser(description=DESC, fromfile_prefix_chars='@')
+        parser.add_argument('-q',  dest='queue_name',   type=str,            help="SQS queue name to send to", required=True)
+        parser.add_argument('-w',  dest="format_any",   action="store_true", help="Any message format accepted i.e. not just JSON", default=False)        
+        parser.add_argument('-f',  dest="flush_queue",  action="store_true", help="Flush SQS queue at startup")
+        parser.add_argument('-r',  dest="retry_always", action="store_true", help="Always retry (includes backoff)", default=False)        
         args=parser.parse_args()
         
         from jldaws.script_txsqs import run
