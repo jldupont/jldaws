@@ -32,6 +32,9 @@ def run(args):
     propagate_error=args.propagate_error
     retry_always=args.retry_always
    
+    ## we need a minimum of second between polls
+    polling_interval=max(1, polling_interval)
+   
     info_dump(vars(args), 20)
    
     # SETUP PRIVATE QUEUE

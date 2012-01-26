@@ -10,7 +10,7 @@ Tests
 History
 =======
 
-0.2.3 : changed command-line format for 'jldrxsqs' and 'jldtxsqs'
+0.2.3 : changed command-line format for 'jldrxsqs' and 'jldtxsqs', 'jlds3notify'
 
 0.2.2 :
 

@@ -6,28 +6,69 @@ import json
 import boto
 from boto.exception import S3ResponseError
 
-def keys_to_dict(keys, d={}):
+def keys_to_dict(keys):
     """
     boto.s3.keys to dictionary
     """
+    d={}
     for key in keys:
         d[key.name]=key
     return d
 
+
+def compute_changes(ckeys, nkeys):
+    """
+    Compute changes in keys
+    """
+    additions=[]
+    substractions=[]
+    changes=[]
     
-def check_changes(ckeys, keys):
+    nset=set(nkeys.keys())
+    cset=set(ckeys.keys())
+    
+    #print "cset: %s" % cset
+    #print "nset: %s" % nset
+    
+    for k in nset:
+        if k not in cset:
+            additions.append(k)
+            
+    for k in cset:
+        if k not in nset:
+            substractions.append(k)
+            
+    common=cset.intersection(nset)
+    for k in common:
+        cetag=ckeys[k].etag
+        netag=nkeys[k].etag
+        
+        if cetag != netag:
+            changes.append(k)
+            
+    return (changes, additions, substractions)
+            
+    
+def check_changes(ckeys, nkeys):
     """
     :param ckeys: current keys data
     :param keys:  keys data just retrieved
     """
+    all_keys=set(nkeys.keys())
+    all_keys.update(ckeys.keys())
+    print all_keys
     changed=[]
-    for key in keys:
-        etag=keys[key].etag
-        ckey=ckeys.get(key, None)
+    for k in all_keys:
+        nkey=nkeys.get(k, None)
+        ckey=ckeys.get(k, None)
+        
+        netag=nkey.etag if nkey is not None else None
         cetag=ckey.etag if ckey is not None else None
         
-        if etag!=cetag:
-            changed.append(key)
+        print "etags:", cetag, netag
+        
+        if netag!=cetag:
+            changed.append(k)
     return changed
 
 def json_string(o):

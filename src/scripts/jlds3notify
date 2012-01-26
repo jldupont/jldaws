@@ -1,14 +1,19 @@
 #!/usr/bin/env python
 """
     S3 Notify - calls the "run" function of a python module upon detecting changes to an S3 bucket
+                Also outputs resulting JSON object to stdout
 
     Command Line:
     
-        jlds3notify [-p POLLING_INTERVAL] [-r prefix] bucket_name module_name
+        jlds3notify [-p POLLING_INTERVAL] [-r prefix] -b bucket_name [-m module_name]
+        
+        OR
+        
+        jlds3notify @config.txt
     
         where 'prefix' is a usual S3 bucket prefix
         where 'bucket_name' is the S3 bucket to monitor
-        where 'module_name' is the python module to call the 'run' function
+        where 'module_name' is the python module to call the 'run' function (optional)
 
     'Run' function signature:
     
@@ -47,15 +52,16 @@ def main():
         import logging
         import jldaws.do_checks
         
-        parser=argparse.ArgumentParser(description=DESC)
-        parser.add_argument('bucket_name',    type=str, help="Bucket name")
-        parser.add_argument('module_name',    type=str, help="Python module to use OR 'None'")
+        parser=argparse.ArgumentParser(description=DESC, fromfile_prefix_chars='@')
+        parser.add_argument('-b',  dest='bucket_name', type=str, help="Bucket name", required=True)
+        parser.add_argument('-m',  dest='module_name', type=str, help="Python module to use OR 'None'", default=None)
         
-        parser.add_argument('-a',             dest="always", help="Always call - even if there are no changes", action="store_true", default=False)
-        parser.add_argument('-r',             dest="prefix", help="Prefix", type=str, action="store", default=DEFAULTS["prefix"])
-        parser.add_argument('-d',             dest="enable_debug",     action="store_true", help="Enable debug information")
-        parser.add_argument('-j',             dest="enable_json",      action="store_true", help="Outputs JSON object to stdout")
-        parser.add_argument('-p',             dest="polling_interval", type=int, action="store", help="Polling interval (seconds)", default=DEFAULTS["polling_interval"])        
+        parser.add_argument('-e',  dest="propagate_error", help="Propagate S3 access errors", action="store_true", default=False)        
+        parser.add_argument('-a',  dest="always", help="Always ouput - even if there are no changes", action="store_true", default=False)
+        parser.add_argument('-r',  dest="prefix", help="Prefix", type=str, action="store", default=DEFAULTS["prefix"])
+        parser.add_argument('-d',  dest="enable_debug",     action="store_true", help="Enable debug information")
+        parser.add_argument('-j',  dest="enable_json",      action="store_true", help="Outputs JSON object to stdout")
+        parser.add_argument('-p',  dest="polling_interval", type=int, action="store", help="Polling interval (seconds)", default=DEFAULTS["polling_interval"])        
         args=parser.parse_args()
         
         from jldaws.script_s3notify import run
