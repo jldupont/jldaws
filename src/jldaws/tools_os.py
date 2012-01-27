@@ -5,6 +5,62 @@
 import os, errno
 import subprocess
 
+def touch(path):
+    """
+    >>> touch("/tmp/JustTouching")
+    ('ok', '/tmp/JustTouching')
+    >>> rm('/tmp/JustTouching')
+    ('ok', '/tmp/JustTouching')
+    """
+    fhandle = file(path, 'a')
+    try:
+        os.utime(path, None)
+        return ('ok', path)
+    except OSError, exc:
+        return ("error", (exc.errno, errno.errorcode[exc.errno]))
+    finally:
+        fhandle.close()        
+
+def rm(path):
+    """
+    Silently (i.e. no exception thrown) removes a path if possible
+    
+    >>> rm("/tmp/NotAFile") ## no need to complain if there is no file
+    ('ok', '/tmp/NotAFile')
+    """
+    try:
+        os.remove(path)
+        return ('ok', path)
+    except OSError, exc:
+        if exc.errno==errno.ENOENT:
+            return ('ok', path)
+        return ("error", (exc.errno, errno.errorcode[exc.errno]))
+
+def can_write(path):
+    """
+    Checks if the current user (i.e. the script) can delete the given path
+    Must check both user & group level permissions
+    
+    FOR THIS TEST, NEED TO CREATE A DIRECTORY /tmp/_test_root_sipi THROUGH ROOT
+    
+    >>> p="/tmp/_test_sipi"
+    >>> rm(p)
+    ('ok', '/tmp/_test_sipi')
+    >>> touch(p)
+    ('ok', '/tmp/_test_sipi')
+    >>> can_write(p)
+    ('ok', True)
+    >>> rm(p)
+    ('ok', '/tmp/_test_sipi')
+    >>> can_write("/tmp/_test_root_sipi/")
+    ('ok', False)
+    """
+    try:
+        return ("ok", os.access(path, os.W_OK))
+    except:
+        return ("error", None)
+
+
 
 def remove_common_prefix(common_prefix, path):
     """
@@ -21,19 +77,18 @@ def remove_common_prefix(common_prefix, path):
 def gen_walk(path, max_files=None):
     count=0
     done=False
-    while not done:
-        for root, _dirs, files in os.walk(path):
+    for root, _dirs, files in os.walk(path):
+        
+        for f in files:
+            yield os.path.join(root, f)
+        
+            count=count+1
+            if max_files is not None:
+                if count==max_files:
+                    done=True
+                    break
             
-            for f in files:
-                yield os.path.join(root, f)
-            
-                count=count+1
-                if max_files is not None:
-                    if count==max_files:
-                        done=True
-                        break
-            
-            if done: break
+        if done: break
         
 
 

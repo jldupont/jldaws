@@ -8,6 +8,7 @@ from time import sleep
 from tools_logging import info_dump, pprint_kv
 from tools_s3      import json_string
 from tools_os      import resolve_path, mkdir_p, gen_walk, remove_common_prefix
+from tools_os      import can_write
 
 def stdout(s):
     sys.stdout.write(s+"\n")
@@ -68,43 +69,62 @@ def run(args):
         sleep(1)
     logging.info("* Source path accessible")
 
-    logging.info("Creating moveto directory if required")
-    code, _=mkdir_p(p_dst)
-    if not code.startswith("ok"):
-        raise Exception("Can't create 'moveto' directory: %s" % p_dst)
-    logging.info("* Created moveto directory")
+    if path_moveto is not None:
+        logging.info("Creating moveto directory if required")
+        code, _=mkdir_p(p_dst)
+        if not code.startswith("ok"):
+            raise Exception("Can't create 'moveto' directory: %s" % p_dst)
+        logging.info("* Created moveto directory")
     
     
     logging.debug("Starting loop...")
     while True:
-        logging.debug("Performing bucket 'get_all_keys'")
         #################################################
         
         try: 
             gen=gen_walk(p_src, max_files=num_files)
             for f in gen:
-                process_file(f, p_src, p_dst, enable_delete, bucket_name, prefix, enable_simulate)
-        except:
-            logging.error("Error processing files...")
+                logging.info("Processing file: %s" % f)
+                process_file(f, p_src, p_dst, enable_delete, bucket_name, prefix, enable_simulate, propagate_error, always)
+
+        except Exception, e:
+            logging.error("Error processing files...(%s)" % str(e))
 
 
         #####################################################
         logging.debug("...sleeping for %s seconds" % polling)
         sleep(polling)
     
+
+def gen_s3_key(p_src, filename, prefix):
+    _, fn=remove_common_prefix(p_src, filename)
+    return "/%s%s" % (prefix, fn)
     
-def process_file(fil, p_src, p_dst, enable_delete, bucket_name, prefix, enable_simulate):
-    _, fn=remove_common_prefix(p_src, fil)
-    s3key="/%s%s" % (prefix, fn)
     
+def process_file(fil, p_src, p_dst, enable_delete, bucket_name, prefix, enable_simulate, propagate_error, always):
+    
+    s3key=gen_s3_key(p_src, fil, prefix)
+    bname=os.path.basename(fil)
+
     if enable_simulate:
         pprint_kv("File to be uploaded", fil)
         pprint_kv(" Filename used on s3", s3key)
-        if enable_delete:
-            pprint_kv(" File would be deleted", fil)
-        else:
-            pprint_kv(" File would be moved to", p_dst)
         
+        if enable_delete:
+            _c, f_is_writable=can_write(fil)            
+            pprint_kv(" File would be deleted", fil)
+            if not f_is_writable:
+                pprint_kv(" ! File can't be deleted", fil)
+        else:
+            fdst=os.path.join(p_dst, bname)
+            _c, d_is_writable=can_write(p_dst)            
+            pprint_kv(" File would be moved to", fdst)
+            if not d_is_writable:
+                pprint_kv(" ! File can't be moved to", p_dst)
+                
+        return
+    
+    
 
     
     
