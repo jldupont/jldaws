@@ -1,0 +1,72 @@
+#!/usr/bin/env python
+"""
+    S3 Upload - automatically upload files to S3
+
+    Command Line:
+    
+        jlds3upload [-p polling_interval] [-e]  [-r prefix] [ -t ] [-d] -b bucket_name -s source_path [-m move_path]
+        
+        OR
+        
+        jlds3upload @config.txt
+
+        -e : propagate errors down to stdout
+        -r : prefix in the bucket
+        -d : delete file instead of moving OR -m for moving
+
+    @author: Jean-Lou Dupont
+"""
+import os, sys, argparse
+op=os.path
+
+try:
+    import jldaws
+except:
+    ### must be in dev mode then    
+    this_dir=op.dirname(__file__)
+    lib_path=op.abspath(op.join(this_dir, ".."))
+    sys.path.insert(0, lib_path)
+    import jldaws
+
+########################################################################
+
+DESC="Upload local files to S3"
+DEFAULTS={
+          "polling_interval": 30
+          ,"prefix": ""
+          ,"num_files": 5
+          }
+
+def main():
+    try:
+        import jldaws.do_setup
+        import logging
+        import jldaws.do_checks
+        
+        parser=argparse.ArgumentParser(description=DESC, fromfile_prefix_chars='@')
+        parser.add_argument('-t',  dest='enable_simulate', action="store_true", help="Simulate processing", default=False)
+        parser.add_argument('-b',  dest='bucket_name', type=str, help="Bucket name", required=True)
+        parser.add_argument('-s',  dest='path_source', type=str, help="Path to monitor for new files",   required=True)
+        parser.add_argument('-m',  dest='path_moveto', type=str, help="Path to move files upon success", default=None)
+        parser.add_argument('-n',  dest='num_files',   type=int, help="Maximum number of files to process per interval", default=DEFAULTS["num_files"])
+        parser.add_argument('-d',  dest='enable_delete', action="store_true", help="Delete file upon successful upload", default=False)
+        
+        parser.add_argument('-e',  dest="propagate_error", help="Propagate S3 access errors", action="store_true", default=False)        
+        parser.add_argument('-a',  dest="always", help="Always ouput - even if there are no changes", action="store_true", default=False)
+        parser.add_argument('-r',  dest="prefix", help="Prefix", type=str, action="store", default=DEFAULTS["prefix"])
+
+        parser.add_argument('-p',  dest="polling_interval", type=int, action="store", help="Polling interval (seconds)", default=DEFAULTS["polling_interval"])        
+        args=parser.parse_args()
+        
+        from jldaws.script_s3upload import run
+        run(args)
+
+    except KeyboardInterrupt:
+        logging.info("..Exiting")
+        sys.exit(0)##no probs
+        
+    except Exception,e:
+        logging.error(str(e))
+        sys.exit(1)
+        
+sys.exit(main())

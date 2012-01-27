@@ -5,6 +5,9 @@
 import logging
 import types
 
+def pprint_kv(k,v, align=20):
+    fmt="%-"+str(align)+"s : %s"
+    print fmt % (k, v)
 
 def info_dump(d, align):
     fmt="%-"+str(align)+"s : %s"

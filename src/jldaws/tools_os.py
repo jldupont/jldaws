@@ -2,8 +2,47 @@
     Created on 2012-01-19
     @author: jldupont
 """
-import os
+import os, errno
 import subprocess
+
+
+def remove_common_prefix(common_prefix, path):
+    """
+    >>> remove_common_prefix("/tmp", "/tmp/some_dir/some_file.ext")
+    ('ok', '/some_dir/some_file.ext')
+    """
+    try:
+        _head, _sep, tail=path.partition(common_prefix)
+        return ("ok", tail)
+    except:
+        return ("error", path)
+
+
+def gen_walk(path, max_files=None):
+    count=0
+    done=False
+    while not done:
+        for root, _dirs, files in os.walk(path):
+            
+            for f in files:
+                yield os.path.join(root, f)
+            
+                count=count+1
+                if max_files is not None:
+                    if count==max_files:
+                        done=True
+                        break
+            
+            if done: break
+        
+
+
+
+def safe_listdir(path):
+    try:
+        return ("ok", os.listdir(path))
+    except Exception, e:
+        return ("error", e)
 
 def get_path_extension(path):
     """
@@ -15,6 +54,21 @@ def get_path_extension(path):
     ('/some/path/file', '')
     """
     return os.path.splitext(path)
+
+def mkdir_p(path):
+    """
+    Silently (i.e. no exception thrown) makes a directory structure if possible
+    
+    This function can be found in the 'sipi' package.
+    """
+    try:
+        os.makedirs(path)
+        return ('ok', path)
+    except OSError, exc:
+        if exc.errno == errno.EEXIST:
+            return ('ok', path)
+
+        return ('error', (exc.errno, errno.errorcode[exc.errno]))
 
 
 def resolve_path(path):
