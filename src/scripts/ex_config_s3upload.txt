@@ -1,0 +1,6 @@
+-e
+-b jldupont_test
+-s /tmp/test/source
+-m /tmp/test/dst
+-r todo
+-p 10

@@ -2,7 +2,7 @@
     Created on 2012-01-26
     @author: jldupont
 """
-import os
+import os, shutil
 from time import sleep
 
 try:    import json
@@ -12,6 +12,14 @@ try:    import yaml
 except: yaml=None
 
 from jldaws.tools_os import resolve_path, file_contents
+
+
+def move(src_path, dst_path):
+    try:
+        shutil.move(src_path, dst_path)
+        return ("ok", None)
+    except Exception, e:
+        return ("error", e)
 
 
 def get_cfg(path_cfg_file):
