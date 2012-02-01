@@ -2,16 +2,17 @@
     Created on 2012-01-26
     @author: jldupont
 """
-import os, shutil, sys, json
+import shutil, sys, json, logging
 from time import sleep
 
-try:    import json
-except: json=None
-    
-try:    import yaml
-except: yaml=None
 
-from jldaws.tools_os import resolve_path, file_contents
+def coroutine(func):
+    def start(*args, **kwargs):
+        cr=func(*args, **kwargs)
+        cr.next()
+        return cr
+    start.__name__=func.__name__
+    return start
 
 def jstdout(jo):
     sys.stdout.write(json.dumps(jo)+"\n")
@@ -55,42 +56,7 @@ def move(src_path, dst_path):
         return ("error", e)
 
 
-def get_cfg(path_cfg_file):
-    """
-    Get configuration dictionary from a filesystem path    
-    """
-    path=resolve_path(path_cfg_file)
-    _root, ext=os.path.splitext(path)
-    
-    if ext!="json" and ext!="yaml":
-        return ("error", "unsupported file format")
-
-    code, maybe_data=file_contents(path)
-    if not code.startswith("ok"):
-        return ("error", "reading file '%s'" % path)
-    
-    if ext=="json" and json is None:
-        return ("error", "JSON parser not available")
-    
-    if ext=="yaml" and yaml is None:
-        return ("error", "YAML parser not available")
-    
-    if ext=="json":
-        try:
-            data=json.loads(maybe_data)
-        except: 
-            return ("error", "JSON parsing")
-    
-    if ext=="yaml":
-        try:    
-            data=yaml.load(maybe_data)
-        except: 
-            return ("error", "YAML parsing")
-    
-    return ("ok", data)
-
-
-def retry(f, always=True, min_wait=1, max_wait=30, max_retries=10):
+def retry(f, always=True, min_wait=1, max_wait=30, max_retries=10, logmsg=None):
     """
     Retries function 'f' : the function should throw an exception to indicate failure 
     
@@ -102,7 +68,7 @@ def retry(f, always=True, min_wait=1, max_wait=30, max_retries=10):
     @raise KeyboardInterrupt
     @return f()
     """
-    
+    showed_msg=False
     wait=min_wait
     retry_count=max_retries
     while True:
@@ -111,7 +77,10 @@ def retry(f, always=True, min_wait=1, max_wait=30, max_retries=10):
         except KeyboardInterrupt:
             raise
         except Exception, exp:   
-                         
+            if not showed_msg:
+                showed_msg=True
+                if logmsg is not None:
+                    logging.warning(logmsg)     
             retry_count=max(retry_count-1, 0)
             if not always and retry_count==0:
                 raise exp

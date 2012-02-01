@@ -31,17 +31,22 @@ def main():
         from jldaws.tools_sys import dnorm
         
         parser=argparse.ArgumentParser(description=DESC, fromfile_prefix_chars='@')
-        parser.add_argument('-tn', dest='topic_name',  type=str, help="Topic name", required=True)
+        parser.add_argument('-id', dest='node_id',  type=str, help="Node id", default=None)
         
-        parser.add_argument('-dp', dest='dst_path', type=str, help="Destination path to write election result")
+        parser.add_argument('-tn', dest='topic_name',  type=str, help="Topic name")
+        parser.add_argument('-qn', dest='queue_name',  type=str, help="Private queue name")
+        
+        parser.add_argument('-dp', dest='dst_path', type=str, help="Destination path to write election result", required=True)
         parser.add_argument('-ms', dest='mod_sub',  type=str, help="Python module for 'subscribe' interface")
         parser.add_argument('-mp', dest='mod_pub',  type=str, help="Python module for 'publish' interface")
         
-        parser.add_argument('-p',  dest="polling_interval", type=int, action="store", help="Polling interval (seconds)", default=DEFAULTS["polling_interval"])        
+        parser.add_argument('-force',dest="force", action="store_true", help="Force 'leader'", default=False)
+        
+        parser.add_argument('-p',   dest="polling_interval", type=int, action="store", help="Polling interval (seconds)", default=DEFAULTS["polling_interval"])        
         args=parser.parse_args()
         
         from jldaws.script_leader import run
-        run(dnorm(vars(args)))
+        run(**dnorm(vars(args)))
 
     except KeyboardInterrupt:
         logging.info("..Exiting")
