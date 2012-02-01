@@ -2,7 +2,7 @@
     Created on 2012-01-26
     @author: jldupont
 """
-import os, shutil
+import os, shutil, sys, json
 from time import sleep
 
 try:    import json
@@ -12,6 +12,39 @@ try:    import yaml
 except: yaml=None
 
 from jldaws.tools_os import resolve_path, file_contents
+
+def jstdout(jo):
+    sys.stdout.write(json.dumps(jo)+"\n")
+
+
+def stdout(s):
+    sys.stdout.write(s+"\n")
+
+def dnorm(d):
+    """
+    Normalize dictionary
+    
+    >>> dnorm({"SoMeKeY":"  spaces  "})
+    {'somekey': 'spaces'}
+    """
+    r={}
+    for e in d:
+        try:    r[e.lower()]=d[e].strip()
+        except: r[e.lower()]=d[e]
+    return r
+
+
+def dstrip(d):
+    """
+    Strip each element in a dict
+    
+    >>> dstrip({"e1":" v1", "e2":" v2 "})
+    {'e1': 'v1', 'e2': 'v2'}
+    """
+    for e in d:
+        try:    d[e]=d[e].strip()
+        except: pass
+    return d
 
 
 def move(src_path, dst_path):
