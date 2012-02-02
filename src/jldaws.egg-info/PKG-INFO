@@ -15,6 +15,7 @@ Description:
         * jlds3upload : automated file upload to S3
         * jldrxsqs : receive from an SQS queue to JSON/string stdout
         * jldtxsqs : transmit on SQS JSON/string from stdin
+        * jldleader: distributed leader election protocol manager 
         
         The philosophy behind these scripts is:
         

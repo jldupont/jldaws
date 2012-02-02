@@ -10,7 +10,7 @@ Tests
 History
 =======
 
-0.2.4 : 
+0.2.5 : 
 
 * normalization of options across scripts (see doc page)
 * initial release of 'jlds3upload'
