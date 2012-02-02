@@ -7,7 +7,7 @@ from time import sleep
 import uuid
 
 from tools_os import can_write, rm, touch
-from tools_sys import retry, SignalTerminate
+from tools_sys import retry, SignalTerminate, jstdout
 #from tools_mod import prepare_callable
 from tools_sqs import gen_queue_name
 from tools_sns import build_topic_arn
@@ -159,6 +159,7 @@ def run_aws(node_id, proc, polling_interval, queue_name, topic_name, dst_path, d
                         nodeid=str(jsonmsg["Message"])
                         
                         transition, current_state=proc.send((poll_count, nodeid))
+                        jstdout({"state": current_state})
                         
                         if transition:
                             logging.info(MSGS[current_state])

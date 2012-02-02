@@ -21,6 +21,7 @@ This package contains a collection of Amazon Web Service related scripts e.g.
 * jlds3upload : automated file upload to S3
 * jldrxsqs : receive from an SQS queue to JSON/string stdout
 * jldtxsqs : transmit on SQS JSON/string from stdin
+* jldleader: distributed leader election protocol manager 
 
 The philosophy behind these scripts is:
 
@@ -55,6 +56,7 @@ setup(name=         'jldaws',
                      'src/scripts/jldtxsqs',
                      'src/scripts/jldrxsqs',     
                      'src/scripts/jlds3upload',
+                     'src/scripts/jldleader',
                      ],
       package_data = {
                       '':[ "*.gif", "*.png", "*.jpg" ],

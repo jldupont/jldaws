@@ -1,3 +1,5 @@
 -e
--q test
--p 5
+-qn
+test
+-p
+5

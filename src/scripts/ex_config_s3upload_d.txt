@@ -1,6 +1,10 @@
 -e
--b jldupont_test
--s /tmp/test/source
+-bn
+jldupont_test
+-sp
+/tmp/test/source
 -d
--r todo
--p 10
+-r
+todo
+-p
+10
