@@ -31,11 +31,10 @@ def main():
         import jldaws.do_checks
         
         parser=argparse.ArgumentParser(description=DESC)
-        parser.add_argument('topic',       type=str, help="Topic to subscribe to")
-        parser.add_argument('module_name', type=str, help="Python module name to execute 'run' callable OR 'None'")
-        parser.add_argument('-p', type=int, dest="polling_interval", action="store", help="Polling interval in seconds", default=DEFAULTS["polling_interval"])
+        parser.add_argument('-tn', dest='topic',       type=str, help="Topic to subscribe to", required=True)
+        parser.add_argument('-mn', dest='module_name', type=str, help="Python module name to execute 'run' callable OR 'None'", required=True)
+        parser.add_argument('-p',  type=int, dest="polling_interval", action="store", help="Polling interval in seconds", default=DEFAULTS["polling_interval"])
         parser.add_argument('-j',             dest="enable_json",    action="store_true", help="Outputs JSON object to stdout")
-        #parser.add_argument('-a',             dest="enable_always",  action="store_true", help="Always output")
         parser.add_argument('-bs',          type=int, nargs=1, dest="batch_size",  action="store", help="Maximum message batch size to process per interval", default=DEFAULTS["batch_size"])
         args=parser.parse_args()
         

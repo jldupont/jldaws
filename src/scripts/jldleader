@@ -33,6 +33,8 @@ def main():
         parser=argparse.ArgumentParser(description=DESC, fromfile_prefix_chars='@')
         parser.add_argument('-id', dest='node_id',  type=str, help="Node id", default=None)
         
+        parser.add_argument('-fd', dest='force_delete',  action="store_true", help="Force delete 'dst_path' upon start", default=False)
+        
         parser.add_argument('-tn', dest='topic_name',  type=str, help="Topic name")
         parser.add_argument('-qn', dest='queue_name',  type=str, help="Private queue name")
         

@@ -5,9 +5,9 @@
 import os, sys, logging
 from time import sleep
 
-from tools_logging import info_dump, pprint_kv
+from tools_logging import pprint_kv
 from tools_s3      import json_string
-from tools_os      import resolve_path, mkdir_p, gen_walk, remove_common_prefix
+from tools_os      import resolve_path, mkdir_p, gen_walk, remove_common_prefix, safe_path_exists
 from tools_os      import can_write, rm
 from tools_sys     import retry, move
 
@@ -23,26 +23,26 @@ def report(ctx, ctx2):
     stdout(json_string(d)) 
 
 
-def run(args):
+def run(enable_simulate=False, bucket_name=None, 
+        path_source=None, path_moveto=None, path_check=None,
+        num_files=5, enable_delete=False, propagate_error=False, prefix=None, polling_interval=None):
     
     #if args.enable_debug:
     #    logger=logging.getLogger()
     #    logger.setLevel(logging.DEBUG)
     
-    bucket_name=args.bucket_name.strip()
-    prefix=args.prefix.strip()
+    bucket_name=bucket_name.strip()
+    path_source=path_source.strip()
     
-    num_files=args.num_files
-    path_source=args.path_source.strip()
+    try:    prefix=prefix.strip()
+    except: pass
     
-    try:    path_moveto=args.path_moveto.strip()
+    try:    path_moveto=path_moveto.strip()
     except: path_moveto=None
     
-    enable_delete=args.enable_delete
-    enable_simulate=args.enable_simulate
-    
-    polling=args.polling_interval
-    propagate_error=args.propagate_error
+    try:    path_check=resolve_path(path_check)
+    except:
+        logging.warning("path_check '%s' might be in error..." % path_check)
     
     ### VALIDATE PARAMETERS
     if enable_delete and path_moveto is not None:
@@ -58,8 +58,6 @@ def run(args):
             raise Exception("Invalid moveto path: %s" % path_moveto)
     else:
         p_dst=None
-    
-    info_dump(vars(args), 20)
     
     ### wait for 'source' path to be available
     logging.info("Waiting for source path to be accessible...")
@@ -99,28 +97,33 @@ def run(args):
         logging.debug("Starting loop...")
     while True:
         #################################################
-        
-        try: 
-            gen=gen_walk(p_src, max_files=num_files)
-            for src_filename in gen:
-                
-                logging.info("Processing file: %s" % src_filename)                
-                s3key_name=gen_s3_key(p_src, src_filename, prefix)
-                
-                if enable_simulate:
-                    simulate(src_filename, s3key_name, enable_delete, p_dst)
-                else:
-                    k=S3Key(bucket)
-                    k.key=s3key_name
-                    process_file(bucket_name, prefix, k, src_filename, p_dst, enable_delete, propagate_error)
 
-        except Exception, e:
-            logging.error("Error processing files...(%s)" % str(e))
+        _code, result=safe_path_exists(path_check)
+                        
+        if path_check is None or result:
+            try: 
+                gen=gen_walk(p_src, max_files=num_files)
+                for src_filename in gen:
+                    
+                    logging.info("Processing file: %s" % src_filename)                
+                    s3key_name=gen_s3_key(p_src, src_filename, prefix)
+                    
+                    if enable_simulate:
+                        simulate(src_filename, s3key_name, enable_delete, p_dst)
+                    else:
+                        k=S3Key(bucket)
+                        k.key=s3key_name
+                        process_file(bucket_name, prefix, k, src_filename, p_dst, enable_delete, propagate_error)
+    
+            except Exception, e:
+                logging.error("Error processing files...(%s)" % str(e))
+        else:
+            logging.info()
 
 
         #####################################################
-        logging.debug("...sleeping for %s seconds" % polling)
-        sleep(polling)
+        logging.debug("...sleeping for %s seconds" % polling_interval)
+        sleep(polling_interval)
     
 
 def gen_s3_key(p_src, filename, prefix):

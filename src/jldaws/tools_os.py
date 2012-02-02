@@ -5,6 +5,12 @@
 import os, errno
 import subprocess
 
+def safe_path_exists(path):
+    try:
+        return ("ok", os.path.exists(path))
+    except:
+        return ("error", False)
+
 def touch(path):
     """
     >>> touch("/tmp/JustTouching")

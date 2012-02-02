@@ -31,10 +31,14 @@ def main():
         import logging
         import jldaws.do_checks
         
+        from jldaws.tools_sys import dnorm
+        from jldaws.tools_logging import info_dump
+        
         parser=argparse.ArgumentParser(description=DESC, fromfile_prefix_chars='@')
         parser.add_argument('-t',  dest='enable_simulate', action="store_true", help="Simulate processing", default=False)
         parser.add_argument('-bn', dest='bucket_name', type=str, help="Bucket name", required=True)
         parser.add_argument('-sp', dest='path_source', type=str, help="Path to monitor for new files",   required=True)
+        parser.add_argument('-cp', dest='path_check',  type=str, help="Check path", default=None)
         parser.add_argument('-mp', dest='path_moveto', type=str, help="Path to move files upon success", default=None)
         parser.add_argument('-bs',  dest='num_files',   type=int, help="Maximum number of files to process per interval", default=DEFAULTS["num_files"])
         parser.add_argument('-d',  dest='enable_delete', action="store_true", help="Delete file upon successful upload", default=False)
@@ -45,8 +49,10 @@ def main():
         parser.add_argument('-p',  dest="polling_interval", type=int, action="store", help="Polling interval (seconds)", default=DEFAULTS["polling_interval"])        
         args=parser.parse_args()
         
+        info_dump(vars(args))
+        
         from jldaws.script_s3upload import run
-        run(args)
+        run(**dnorm(vars(args)))
 
     except KeyboardInterrupt:
         logging.info("..Exiting")

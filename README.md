@@ -14,6 +14,7 @@ History
 
 * normalization of options across scripts (see doc page)
 * initial release of 'jlds3upload'
+* added "check path" functionality - conditional execution of scripts
 
 0.2.3 : changed command-line format for 'jldrxsqs' and 'jldtxsqs', 'jlds3notify'
 

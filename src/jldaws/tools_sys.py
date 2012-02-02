@@ -4,14 +4,15 @@
 """
 import shutil, sys, json, logging
 from time import sleep
+import functools
 
 
 def coroutine(func):
+    @functools.wraps(func)
     def start(*args, **kwargs):
         cr=func(*args, **kwargs)
         cr.next()
         return cr
-    start.__name__=func.__name__
     return start
 
 def jstdout(jo):
