@@ -39,6 +39,7 @@ def main():
         parser.add_argument('-dp', dest='dst_path', action="store", type=str, help="Destination path to write election result", required=True)
         parser.add_argument('-id', dest='node_id',  type=str, help="Node id", default=None)
         
+        parser.add_argument('-dq', dest='delete_queue',  action="store_true", help="Force delete SQS queue on exit", default=False)
         parser.add_argument('-fd', dest='force_delete',  action="store_true", help="Force delete 'dst_path' upon start", default=False)
         
         parser.add_argument('-tn', dest='topic_name',  action="store", type=str, help="Topic name")
@@ -47,8 +48,8 @@ def main():
         parser.add_argument('-proto_n', dest='proto_n',  action="store",type=int, help="Protocol - parameter 'n'", default=DEFAULTS["proto_n"])
         parser.add_argument('-proto_m', dest='proto_m',  action="store",type=int, help="Protocol - parameter 'm'", default=DEFAULTS["proto_m"])
         
-        parser.add_argument('-ms', dest='mod_sub',  type=str, help="Python module for 'subscribe' interface")
-        parser.add_argument('-mp', dest='mod_pub',  type=str, help="Python module for 'publish' interface")
+        #parser.add_argument('-ms', dest='mod_sub',  type=str, help="Python module for 'subscribe' interface")
+        #parser.add_argument('-mp', dest='mod_pub',  type=str, help="Python module for 'publish' interface")
         
         parser.add_argument('-force',dest="force", action="store_true", help="Force 'leader'", default=False)
         

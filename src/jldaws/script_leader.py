@@ -6,9 +6,9 @@ import logging, os, json, signal
 from time import sleep
 import uuid
 
-from tools_os import can_write, rm
+from tools_os import can_write, rm, touch
 from tools_sys import retry, SignalTerminate
-from tools_mod import prepare_callable
+#from tools_mod import prepare_callable
 from tools_sqs import gen_queue_name
 from tools_sns import build_topic_arn
 from tools_leader import protocol_processor
@@ -24,7 +24,7 @@ def handlerSigTerm(*p, **k):
     sigtermReceived=True
 
 def run(dst_path=None, topic_name=None, queue_name=None, mod_sub=None, mod_pub=None, 
-        polling_interval=None, force=False, node_id=None, force_delete=False,
+        polling_interval=None, force=False, node_id=None, force_delete=False, delete_queue=None,
         proto_n=None, proto_m=None):
 
     signal.signal(signal.SIGTERM, handlerSigTerm)
@@ -62,6 +62,8 @@ def run(dst_path=None, topic_name=None, queue_name=None, mod_sub=None, mod_pub=N
     
     ### START MAIN LOOP
     ######################################
+    run_aws(node_id, proc, polling_interval, queue_name, topic_name, dst_path, delete_queue)
+    """
     if force:
         run_force(node_id, proc, polling_interval, dst_path)
     else:
@@ -69,15 +71,17 @@ def run(dst_path=None, topic_name=None, queue_name=None, mod_sub=None, mod_pub=N
             run_aws(node_id, proc, polling_interval, queue_name, topic_name, dst_path)
         else:
             run_mod(node_id, proc, polling_interval, topic_name, dst_path, mod_sub, mod_pub)
-
+    """
 
         
-def run_aws(node_id, proc, polling_interval, queue_name, topic_name, dst_path):
-
+def run_aws(node_id, proc, polling_interval, queue_name, topic_name, dst_path, delete_queue):
+    
     if topic_name is None:
         raise Exception("Need a topic_name")
     
+    auto_queue=False
     if queue_name is None:
+        auto_queue=True
         queue_name=gen_queue_name()
 
     def setup_private_queue():
@@ -88,9 +92,9 @@ def run_aws(node_id, proc, polling_interval, queue_name, topic_name, dst_path):
 
     # SETUP PRIVATE QUEUE
     logging.info("Creating queue '%s'" % queue_name)
-    conn, q=retry(setup_private_queue, logmsg="Having trouble creating queue...")
+    sqs_conn, q=retry(setup_private_queue, logmsg="Having trouble creating queue...")
     
-    topic_arn=build_topic_arn(conn, topic_name)
+    topic_arn=build_topic_arn(sqs_conn, topic_name)
     
     logging.info("topic_arn: %s" % topic_arn)    
     
@@ -126,54 +130,76 @@ def run_aws(node_id, proc, polling_interval, queue_name, topic_name, dst_path):
     
     poll_count=0
     logging.info("Starting loop...")
+
+    def cleanup():
+        rm(dst_path)
+        if auto_queue or delete_queue:
+            logging.info("... deleting queue")
+            try:    sqs_conn.delete_queue(q)
+            except: pass
     
     while True:
-        
-        global sigtermReceived
-        if sigtermReceived:
-            raise SignalTerminate()
-            
         try:
-            ### BATCH PROCESS - required!!!
-            while True:
-                rawmsg=q.read()
-                if rawmsg is not None:
-                    jsonmsg=json.loads(rawmsg.get_body())
-                    
-                    ## SNS encapsulates the original message...
-                    nodeid=str(jsonmsg["Message"])
-                    
-                    transition, current_state=proc.send((poll_count, nodeid))
-                    
-                    q.delete_message(rawmsg)
-                    if transition:
-                        logging.info(MSGS[current_state])
-                else:
-                    break
+            ## do a bit of garbage collection :)        
+            global sigtermReceived
+            if sigtermReceived:
+                cleanup()
+                raise SignalTerminate()
+            #########################################
                 
-        except SQSDecodeError:
-            logging.warning("Message decoding error")
-            
-        except Exception,e:
-            logging.error(str(e))
-            continue
-    
-        msg=str(node_id)
-    
-        logging.debug("Publishing our 'node id': %s" % node_id)
-        try:
-            snsconn.publish(topic_arn, msg)
-        except:
+            try:
+                ### BATCH PROCESS - required!!!
+                while True:
+                    rawmsg=q.read()
+                    if rawmsg is not None:
+                        jsonmsg=json.loads(rawmsg.get_body())
+                        q.delete_message(rawmsg)
+                        
+                        ## SNS encapsulates the original message...
+                        nodeid=str(jsonmsg["Message"])
+                        
+                        transition, current_state=proc.send((poll_count, nodeid))
+                        
+                        if transition:
+                            logging.info(MSGS[current_state])
+                            if current_state=="L":
+                                code, _=touch(dst_path)
+                                logging.info("Created '%s': %s" % (dst_path, code))
+                            else:
+                                code, _=rm(dst_path)
+                                logging.info("Deleted '%s': %s" % (dst_path, code))
+                    else:
+                        break
+                    
+            except SQSDecodeError:
+                logging.warning("Message decoding error")
+                
+            except Exception,e:
+                logging.error(str(e))
+                continue
+        
+            msg=str(node_id)
+        
+            logging.debug("Publishing our 'node id': %s" % node_id)
             try:
                 snsconn.publish(topic_arn, msg)
             except:
-                logging.warning("Can't publish to topic '%s'" % topic_name)
+                try:
+                    snsconn.publish(topic_arn, msg)
+                except:
+                    logging.warning("Can't publish to topic '%s'" % topic_name)
+            
+            logging.debug("... sleeping for %s seconds" % polling_interval)
+            sleep(polling_interval)
+            poll_count=poll_count+1
+            
+        except KeyboardInterrupt:
+            cleanup()
+            raise
         
-        logging.debug("... sleeping for %s seconds" % polling_interval)
-        sleep(polling_interval)
-        poll_count=poll_count+1
         
 
+"""
 def run_force(node_id, proc, polling_interval, dst_path):
     pass
 
@@ -206,5 +232,4 @@ def run_mod(node_id, proc, polling_interval, topic_name, dst_path, mod_sub, mod_
         logging.debug("... sleeping for %s seconds" % polling_interval)
         sleep(polling_interval)
         poll_count=poll_count+1
-        
-
+"""

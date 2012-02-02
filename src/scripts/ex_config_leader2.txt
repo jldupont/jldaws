@@ -1,5 +1,5 @@
 -dp
-/tmp/am_leader
+/tmp/am_leader2
 -tn
 election
 -p
