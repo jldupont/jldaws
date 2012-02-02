@@ -35,7 +35,7 @@ def run(enable_simulate=False, bucket_name=None,
     path_source=path_source.strip()
     
     try:    prefix=prefix.strip()
-    except: pass
+    except: prefix=None
     
     try:    path_moveto=path_moveto.strip()
     except: path_moveto=None
@@ -60,7 +60,7 @@ def run(enable_simulate=False, bucket_name=None,
         p_dst=None
     
     ### wait for 'source' path to be available
-    logging.info("Waiting for source path to be accessible...")
+    logging.info("Waiting for source path to be accessible... CTRL-c to stop")
     while True:
         if os.path.isdir(p_src):
             break
@@ -68,7 +68,7 @@ def run(enable_simulate=False, bucket_name=None,
     logging.info("* Source path accessible")
 
     if path_moveto is not None:
-        logging.info("Creating moveto directory if required")
+        logging.info("Creating 'moveto' directory if required")
         code, _=mkdir_p(p_dst)
         if not code.startswith("ok"):
             raise Exception("Can't create 'moveto' directory: %s" % p_dst)
@@ -98,9 +98,9 @@ def run(enable_simulate=False, bucket_name=None,
     while True:
         #################################################
 
-        _code, result=safe_path_exists(path_check)
+        _code, path_exists=safe_path_exists(path_check)
                         
-        if path_check is None or result:
+        if path_check is None or path_exists:
             try: 
                 gen=gen_walk(p_src, max_files=num_files)
                 for src_filename in gen:
@@ -149,11 +149,6 @@ def simulate(fil, s3key_name, enable_delete, p_dst):
             pprint_kv(" ! File can't be moved to", p_dst)
 
 
-MSGS={
-      "up":    "Uploading to S3"
-      ,"del":  "Deleting source file"
-      ,"move": "Moving source file"
-      }    
 def process_file(bucket_name, prefix, k, src_filename, p_dst, enable_delete, propagate_error):
     
     ctx={"src": src_filename, "key": k.name, "bucket": bucket_name, "prefix": prefix}
@@ -163,7 +158,6 @@ def process_file(bucket_name, prefix, k, src_filename, p_dst, enable_delete, pro
         k.set_contents_from_filename(src_filename)
         report(ctx, {"code":"ok", "kind":"upload"})
     except:
-        msg=MSGS["up"] % src_filename
         if propagate_error:
             report(ctx, {"code":"error", "kind":"upload"})
         return
