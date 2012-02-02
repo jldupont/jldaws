@@ -20,8 +20,12 @@ except:
 
 DESC="Leader election protocol manager"
 DEFAULTS={
-          "polling_interval": 30
+          "polling_interval": 10
+          ,"proto_n": 2
+          ,"proto_m": 4
           }
+
+from jldaws.tools_sys import SignalTerminate
 
 def main():
     try:
@@ -29,16 +33,20 @@ def main():
         import logging
         import jldaws.do_checks
         from jldaws.tools_sys import dnorm
+        from jldaws.tools_logging import info_dump
         
         parser=argparse.ArgumentParser(description=DESC, fromfile_prefix_chars='@')
+        parser.add_argument('-dp', dest='dst_path', action="store", type=str, help="Destination path to write election result", required=True)
         parser.add_argument('-id', dest='node_id',  type=str, help="Node id", default=None)
         
         parser.add_argument('-fd', dest='force_delete',  action="store_true", help="Force delete 'dst_path' upon start", default=False)
         
-        parser.add_argument('-tn', dest='topic_name',  type=str, help="Topic name")
-        parser.add_argument('-qn', dest='queue_name',  type=str, help="Private queue name")
+        parser.add_argument('-tn', dest='topic_name',  action="store", type=str, help="Topic name")
+        parser.add_argument('-qn', dest='queue_name',  action="store",type=str, help="Private queue name")
         
-        parser.add_argument('-dp', dest='dst_path', type=str, help="Destination path to write election result", required=True)
+        parser.add_argument('-proto_n', dest='proto_n',  action="store",type=int, help="Protocol - parameter 'n'", default=DEFAULTS["proto_n"])
+        parser.add_argument('-proto_m', dest='proto_m',  action="store",type=int, help="Protocol - parameter 'm'", default=DEFAULTS["proto_m"])
+        
         parser.add_argument('-ms', dest='mod_sub',  type=str, help="Python module for 'subscribe' interface")
         parser.add_argument('-mp', dest='mod_pub',  type=str, help="Python module for 'publish' interface")
         
@@ -47,11 +55,17 @@ def main():
         parser.add_argument('-p',   dest="polling_interval", type=int, action="store", help="Polling interval (seconds)", default=DEFAULTS["polling_interval"])        
         args=parser.parse_args()
         
+        info_dump(vars(args), 20)
+        
         from jldaws.script_leader import run
         run(**dnorm(vars(args)))
 
+    except SignalTerminate:
+        logging.warning("... Terminating")
+        sys.exit(0)
+
     except KeyboardInterrupt:
-        logging.info("..Exiting")
+        logging.info("... Exiting")
         sys.exit(0)##no probs
         
     except Exception,e:

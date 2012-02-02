@@ -7,6 +7,9 @@ from time import sleep
 import functools
 
 
+class SignalTerminate(Exception): pass
+
+
 def coroutine(func):
     @functools.wraps(func)
     def start(*args, **kwargs):
