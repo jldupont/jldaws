@@ -2,11 +2,6 @@
 """
     Executes a local script upon receiving a message on a specific Amazon SNS topic
 
-    Command Line:
-    
-        jldexec [-j] [-n] [-p polling_interval] topic /path/to/script
-    
-
     @author: Jean-Lou Dupont
 """
 import os, sys, argparse
@@ -41,7 +36,7 @@ def main():
         parser.add_argument('-p', type=int, dest="polling_interval", action="store", help="Polling interval in seconds", default=DEFAULTS["polling_interval"])
         parser.add_argument('-j',             dest="enable_json",    action="store_true", help="Outputs JSON object to stdout")
         #parser.add_argument('-a',             dest="enable_always",  action="store_true", help="Always output")
-        parser.add_argument('-n',          type=int, nargs=1, dest="batch_size",  action="store", help="Maximum message batch size to process per interval", default=DEFAULTS["batch_size"])
+        parser.add_argument('-bs',          type=int, nargs=1, dest="batch_size",  action="store", help="Maximum message batch size to process per interval", default=DEFAULTS["batch_size"])
         args=parser.parse_args()
         
         from jldaws.script_exec import run

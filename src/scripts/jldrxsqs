@@ -2,15 +2,6 @@
 """
     Receives from an SQS queue and outputs JSON/string object to stdout
 
-    Command Line:
-    
-        jldrxsqs [-r] [-e] [-w] [-f] [-p polling_interval] [-n batch_size] -q queue_name
-        
-        OR
-        
-        jldrxsqs @config.txt
-    
-        This command takes its input from an SQS queue and passes the received string to stdout
 
     @author: Jean-Lou Dupont
 """
@@ -41,13 +32,13 @@ def main():
         import jldaws.do_checks
         
         parser=argparse.ArgumentParser(description=DESC, fromfile_prefix_chars='@')
-        parser.add_argument('-e',         dest="propagate_error",  action="store_true", help="Propagate SQS error", default=False)        
-        parser.add_argument('-w',         dest="format_any",  action="store_true", help="Any message format accepted i.e. not just JSON", default=False)        
-        parser.add_argument('-f',         dest="flush_queue", action="store_true", help="Flush SQS queue at startup")
-        parser.add_argument('-p',         dest="polling_interval", type=int, help="Polling interval (seconds)", default=DEFS["polling_interval"])
-        parser.add_argument('-n',         dest="batch_size", type=int, help="Maximum batch size per interval", default=DEFS["batch_size"])
-        parser.add_argument('-q',         dest="queue_name", type=str, help="SQS queue name", required=True)
-        parser.add_argument('-r',         dest="retry_always",  action="store_true", help="Always retry (includes backoff)", default=False)
+        parser.add_argument('-e',    dest="propagate_error",  action="store_true", help="Propagate SQS error", default=False)        
+        parser.add_argument('-w',    dest="format_any",  action="store_true", help="Any message format accepted i.e. not just JSON", default=False)        
+        parser.add_argument('-fq',   dest="flush_queue", action="store_true", help="Flush SQS queue at startup")
+        parser.add_argument('-p',    dest="polling_interval", type=int, help="Polling interval (seconds)", default=DEFS["polling_interval"])
+        parser.add_argument('-bs',   dest="batch_size", type=int, help="Maximum batch size per interval", default=DEFS["batch_size"])
+        parser.add_argument('-qn',   dest="queue_name", type=str, help="SQS queue name", required=True)
+        parser.add_argument('-r',    dest="retry_always",  action="store_true", help="Always retry (includes backoff)", default=False)
         args=parser.parse_args()
         
         from jldaws.script_rxsqs import run

@@ -3,27 +3,6 @@
     S3 Notify - calls the "run" function of a python module upon detecting changes to an S3 bucket
                 Also outputs resulting JSON object to stdout
 
-    Command Line:
-    
-        jlds3notify [-p POLLING_INTERVAL] [-r prefix] -b bucket_name [-m module_name]
-        
-        OR
-        
-        jlds3notify @config.txt
-    
-        where 'prefix' is a usual S3 bucket prefix
-        where 'bucket_name' is the S3 bucket to monitor
-        where 'module_name' is the python module to call the 'run' function (optional)
-
-    'Run' function signature:
-    
-        run(bucket_name, prefix, keys={}, changes=[])
-               
-        where 'keys' is a dictionary with the key field being the S3 object name
-         and the value field being a boto.s3.Key object
-         
-        where 'changes' is a list of S3 object name which changed between polling interval
-
     @author: Jean-Lou Dupont
 """
 import os, sys, argparse
@@ -53,13 +32,13 @@ def main():
         import jldaws.do_checks
         
         parser=argparse.ArgumentParser(description=DESC, fromfile_prefix_chars='@')
-        parser.add_argument('-b',  dest='bucket_name', type=str, help="Bucket name", required=True)
-        parser.add_argument('-m',  dest='module_name', type=str, help="Python module to use OR 'None'", default=None)
+        parser.add_argument('-bn', dest='bucket_name', type=str, help="Bucket name", required=True)
+        parser.add_argument('-mn', dest='module_name', type=str, help="Python module to use OR 'None'", default=None)
         
         parser.add_argument('-e',  dest="propagate_error", help="Propagate S3 access errors", action="store_true", default=False)        
         parser.add_argument('-a',  dest="always", help="Always ouput - even if there are no changes", action="store_true", default=False)
         parser.add_argument('-r',  dest="prefix", help="Prefix", type=str, action="store", default=DEFAULTS["prefix"])
-        parser.add_argument('-d',  dest="enable_debug",     action="store_true", help="Enable debug information")
+        parser.add_argument('-debug', dest="enable_debug",     action="store_true", help="Enable debug information")
         parser.add_argument('-j',  dest="enable_json",      action="store_true", help="Outputs JSON object to stdout")
         parser.add_argument('-p',  dest="polling_interval", type=int, action="store", help="Polling interval (seconds)", default=DEFAULTS["polling_interval"])        
         args=parser.parse_args()

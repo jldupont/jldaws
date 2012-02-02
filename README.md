@@ -10,7 +10,10 @@ Tests
 History
 =======
 
-0.2.4 : initial release of 'jlds3upload'
+0.2.4 : 
+
+* normalization of options across scripts (see doc page)
+* initial release of 'jlds3upload'
 
 0.2.3 : changed command-line format for 'jldrxsqs' and 'jldtxsqs', 'jlds3notify'
 

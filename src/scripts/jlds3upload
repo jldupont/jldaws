@@ -2,18 +2,6 @@
 """
     S3 Upload - automatically upload files to S3
 
-    Command Line:
-    
-        jlds3upload [-p polling_interval] [-e]  [-r prefix] [ -t ] [-d] -b bucket_name -s source_path [-m move_path]
-        
-        OR
-        
-        jlds3upload @config.txt
-
-        -e : propagate errors down to stdout
-        -r : prefix in the bucket
-        -d : delete file instead of moving OR -m for moving
-
     @author: Jean-Lou Dupont
 """
 import os, sys, argparse
@@ -45,10 +33,10 @@ def main():
         
         parser=argparse.ArgumentParser(description=DESC, fromfile_prefix_chars='@')
         parser.add_argument('-t',  dest='enable_simulate', action="store_true", help="Simulate processing", default=False)
-        parser.add_argument('-b',  dest='bucket_name', type=str, help="Bucket name", required=True)
-        parser.add_argument('-s',  dest='path_source', type=str, help="Path to monitor for new files",   required=True)
-        parser.add_argument('-m',  dest='path_moveto', type=str, help="Path to move files upon success", default=None)
-        parser.add_argument('-n',  dest='num_files',   type=int, help="Maximum number of files to process per interval", default=DEFAULTS["num_files"])
+        parser.add_argument('-bn', dest='bucket_name', type=str, help="Bucket name", required=True)
+        parser.add_argument('-sp', dest='path_source', type=str, help="Path to monitor for new files",   required=True)
+        parser.add_argument('-mp', dest='path_moveto', type=str, help="Path to move files upon success", default=None)
+        parser.add_argument('-bs',  dest='num_files',   type=int, help="Maximum number of files to process per interval", default=DEFAULTS["num_files"])
         parser.add_argument('-d',  dest='enable_delete', action="store_true", help="Delete file upon successful upload", default=False)
         
         parser.add_argument('-e',  dest="propagate_error", help="Propagate S3 access errors", action="store_true", default=False)        
