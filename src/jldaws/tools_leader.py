@@ -4,9 +4,10 @@
 """
 from tools_sys import coroutine
 
-def _test_leader_tracking():
+@coroutine
+def leader_tracking():
     """
-    ... because I can't put the doctest in the function declaration itself: http://bugs.python.org/issue6835
+    Tracks 'leader' status - only returns transitions
     
     >>> lt=leader_tracking()
     >>> print lt.send(False)
@@ -20,13 +21,7 @@ def _test_leader_tracking():
     >>> print lt.send(False)
     ('tr', 'down')
     >>> print lt.send(False)
-    ('nop', None)
-    """
-
-@coroutine
-def leader_tracking():
-    """
-    Tracks 'leader' status - only returns transitions
+    ('nop', None)    
     """
     last_status=False
     result=("nop", None)
