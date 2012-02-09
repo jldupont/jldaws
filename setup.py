@@ -6,7 +6,7 @@
     @author: jldupont
 """
 __author__  ="Jean-Lou Dupont"
-__version__ ="0.2.5"
+__version__ ="0.2.6"
 
 
 from distutils.core import setup
@@ -19,6 +19,7 @@ Overview
 This package contains a collection of Amazon Web Service related scripts e.g.
 
 * jlds3upload : automated file upload to S3
+* jlds3download : automated file download from S3
 * jldrxsqs : receive from an SQS queue to JSON/string stdout
 * jldtxsqs : transmit on SQS JSON/string from stdin
 * jldleader: distributed leader election protocol manager 
@@ -56,12 +57,10 @@ setup(name=         'jldaws',
                      'src/scripts/jldtxsqs',
                      'src/scripts/jldrxsqs',     
                      'src/scripts/jlds3upload',
+                     'src/scripts/jlds3download',
                      'src/scripts/jldleader',
                      ],
-      package_data = {
-                      '':[ "*.gif", "*.png", "*.jpg" ],
-                      },
-      include_package_data=True,                      
-      zip_safe=False,
-      long_description=DESC
+      zip_safe=False
+      ,long_description=DESC
+      ,install_requires=["pyfnc >= 0.1.2"]
       )

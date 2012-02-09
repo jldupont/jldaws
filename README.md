@@ -10,6 +10,12 @@ Tests
 History
 =======
 
+0.2.6 :
+
+* added 'jlds3download'
+* fixed bug in 'jlds3upload'
+* new dependency: 'pyfnc'
+
 0.2.5 : 
 
 * normalization of options across scripts (see doc page)

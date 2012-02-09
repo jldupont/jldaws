@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """
-    S3 Upload - automatically upload files to S3
+    S3 Download - automatically download files from S3
 
     @author: Jean-Lou Dupont
 """
@@ -18,7 +18,7 @@ except:
 
 ########################################################################
 
-DESC="Upload local files to S3"
+DESC="Download files from S3"
 DEFAULTS={
           "polling_interval": 30
           ,"prefix": ""
@@ -35,23 +35,23 @@ def main():
         from jldaws.tools_logging import info_dump
         
         parser=argparse.ArgumentParser(description=DESC, fromfile_prefix_chars='@')
-        parser.add_argument('-t',  dest='enable_simulate', action="store_true", help="Simulate processing", default=False)
-        parser.add_argument('-bn', dest='bucket_name', type=str, help="Bucket name", required=True)
-        parser.add_argument('-sp', dest='path_source', type=str, help="Path to monitor for new files",   required=True)
-        parser.add_argument('-cp', dest='path_check',  type=str, help="Check path", default=None)
-        parser.add_argument('-mp', dest='path_moveto', type=str, help="Path to move files upon success", default=None)
-        parser.add_argument('-bs',  dest='num_files',   type=int, help="Maximum number of files to process per interval", default=DEFAULTS["num_files"])
-        parser.add_argument('-d',  dest='enable_delete', action="store_true", help="Delete file upon successful upload", default=False)
-        
-        parser.add_argument('-e',  dest="propagate_error", help="Propagate S3 access errors", action="store_true", default=False)        
+        parser.add_argument('-bn', dest='bucket_name', type=str, help="Bucket name",      required=True)
         parser.add_argument('-r',  dest="prefix", help="Prefix", type=str, action="store", default=DEFAULTS["prefix"])
+        
+        parser.add_argument('-dp', dest='path_dest',   type=str, help="Destination path", required=True)
+        parser.add_argument('-cp', dest='path_check',  type=str, help="Check path", default=None)
+
+        parser.add_argument('-bs',  dest='num_files',   type=int, help="Maximum number of files to process per interval", default=DEFAULTS["num_files"])
+        parser.add_argument('-e',  dest="propagate_error", help="Propagate S3 access errors", action="store_true", default=False)        
+        parser.add_argument('-jk', dest="just_keys",       help="Just download keys", action="store_true", default=False)        
+        parser.add_argument('-dd', dest="dont_dl",         help="Don't download if local file exits", action="store_true", default=False)
 
         parser.add_argument('-p',  dest="polling_interval", type=int, action="store", help="Polling interval (seconds)", default=DEFAULTS["polling_interval"])        
         args=parser.parse_args()
         
         info_dump(vars(args), 20)
         
-        from jldaws.script_s3upload import run
+        from jldaws.script_s3download import run
         run(**dnorm(vars(args)))
 
     except KeyboardInterrupt:

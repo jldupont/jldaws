@@ -6,6 +6,19 @@ import json
 import boto
 from boto.exception import S3ResponseError
 
+def get_all_keys(bucket, prefix):
+    try:
+        result=[]
+        
+        for key in bucket.list(prefix=prefix):
+            result.append(key.name)
+        
+        return ("ok", result)
+    except:
+        return ("error", "S3 access")
+    
+
+
 def keys_to_dict(keys):
     """
     boto.s3.keys to dictionary

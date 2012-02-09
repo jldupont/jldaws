@@ -47,6 +47,8 @@ def can_write(path):
     Checks if the current user (i.e. the script) can delete the given path
     Must check both user & group level permissions
     
+    @return: (code, path | msg)
+    
     FOR THIS TEST, NEED TO CREATE A DIRECTORY /tmp/_test_root_sipi THROUGH ROOT
     
     >>> p="/tmp/_test_sipi"
