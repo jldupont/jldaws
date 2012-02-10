@@ -7,13 +7,13 @@ from time import sleep
 
 from tools_s3    import json_string, get_all_keys
 from tools_os    import resolve_path, safe_path_exists
-from tools_os    import can_write
+from tools_os    import can_write, check_can_write_paths, check_exist_paths
 from tools_sys   import retry
 from tools_func  import transition_manager
 import boto
 from boto.s3.key import Key as S3Key
 
-from pyfnc import patterned, pattern, partial
+from pyfnc import patterned, pattern, partial, dic, coroutine
 
 def stdout(s):
     sys.stdout.write(s+"\n")
@@ -29,9 +29,10 @@ def run(bucket_name=None, prefix=None,
         dont_dl=None, just_keys=None,
         num_files=5, propagate_error=False,  polling_interval=None):
     
-    code, path_check=resolve_path(path_check)
-    if not code.startswith("ok"):
-        logging.warning("path_check '%s' might be in error..." % path_check)
+    if path_check is not None:
+        code, path_check=resolve_path(path_check)
+        if not code.startswith("ok"):
+            logging.warning("path_check '%s' might be in error..." % path_check)
     
     ### VALIDATE PARAMETERS
     
@@ -62,7 +63,9 @@ def run(bucket_name=None, prefix=None,
     logging.info("Got bucket")
     #############################
 
-    ctx={
+    
+
+    ctx=dic({
          "bucket":     bucket
          ,"prefix":    prefix
          ,"path_dest": path_dest
@@ -73,9 +76,11 @@ def run(bucket_name=None, prefix=None,
                  "up":    partial(log, "Check path OK:  %s", path_check)
                  ,"down": partial(log, "Check path !OK: %s", path_check) 
                  }
-         }
+         })
 
     ctx["tm"]=transition_manager(ctx)
+    ctx["mk"]=manager_keys(ctx)
+    
     
     logging.info("Starting loop...")
     
@@ -94,20 +99,18 @@ def run(bucket_name=None, prefix=None,
         sleep(polling_interval)
     
     
-@pattern(dict, None, any)
+@pattern(dic, None, any)
 def maybe_process_1(ctx, _1, _2):
     process(ctx)
 
-@pattern(dict, any, False)
+@pattern(dic, any, False)
 def maybe_process_2(ctx, _1, _2):
     """ nothing to do has check_path doesn't exist """
-    tm=ctx["tm"]
-    tm.send(("cp", False))
+    ctx["tm"].send(("cp", False))
     
-@pattern(dict, any, True)
+@pattern(dic, any, True)
 def maybe_process_3(ctx, _1, _2):
-    tm=ctx["tm"]
-    tm.send(("cp", True))
+    ctx["tm"].send(("cp", True))
     process(ctx)
 
 @patterned
@@ -120,25 +123,81 @@ def process(ctx):
     """
     bucket=ctx["bucket"]
     prefix=ctx["prefix"]
+    path_dest=ctx["path_dest"]
     
     code, maybe_keys=get_all_keys(bucket, prefix)
     if not code.startswith("ok"):
         e=maybe_keys
         logging.warning("Error retrieving keys: %s" % str(e))
         return
+
+    ## Check if it already exists 
+    results_exists=check_exist_paths(path_dest, maybe_keys)
+
+    def remove_exists(entry):
+        code, (_path_fragment, exists)=entry
+        if not code.startswith("ok"):
+            return False ## filter-out
+        return not exists
     
-    process2(ctx, ctx["just_keys"], maybe_keys)
+    potential_todo=filter(remove_exists, results_exists)
+
+    def keep_only_keys(entry):
+        _, (key, state)=entry
+        return key
+    
+    potential_todo_keys=map(keep_only_keys, potential_todo)
+
+    ## Check if 'key' can be written to
+    results=check_can_write_paths(path_dest, potential_todo_keys)
+    
+    def keep(which):
+        
+        def switch(status):
+            return status if which=="writable" else not status
+        
+        def _(entry):
+            code, (_fragment, status)=entry
+            if not code.startswith("ok"):
+                return switch(False)
+            
+            return switch(status)
+        return _
+            
+    good_key_entries=filter(keep("writable"), results)
+    bad_key_entries=filter(keep("!writable"), results)
+
+    ## Report bad keys to manager_keys
+    ctx["mk"].send(bad_key_entries)
+        
+    process2(ctx, ctx["just_keys"], good_key_entries)
     
     
-@pattern(dict, True, list)
+@pattern(dic, True, list)
 def process2_justkeys(ctx, _, keys):
+    """
+    """
     print keys
     
-@pattern(dict, False, list)
+@pattern(dic, False, list)
 def process2_dl(ctx, _, keys):
-    print "all!"
+    """
+    """
+    print keys
     
 @patterned
 def process2(ctx, just_keys, keys): pass
 
 
+    
+
+@coroutine
+def manager_keys(ctx):
+    
+    while True:
+        entries=(yield)
+        
+
+
+        
+        

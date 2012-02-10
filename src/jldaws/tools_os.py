@@ -5,6 +5,77 @@
 import os, errno
 import subprocess
 
+
+def safe_can_write(path):
+    """
+    Check if 'path' can be written to
+    
+    - If 'path' exists, do safe test (i.e. non-destructive)
+    - If 'path' !exists, do 'append' test
+    
+    >>> safe_can_write("/tmp/!+$,@")
+    ('ok', True)
+    >>> rm("/tmp/!+$,@")
+    ('ok', '/tmp/!+$,@')
+    >>> safe_can_write("/tmp/")
+    ('ok', True)
+    """
+    try:
+        maybe_exists=os.path.exists(path)
+        if maybe_exists:
+            return can_write(path)
+    except:
+        pass
+
+    try:
+        f=open(path, "a")
+    except:
+        return ("error", False)
+    finally:
+        try:
+            rm(path)
+            f.close()
+        except:
+            pass
+    
+    return ("ok", True)
+
+def check_can_write_paths(src_dir, paths):
+    """
+    >>> check_can_write_paths("/tmp", ["allo", "!$[].+$", ".X11-unix"])
+    [('ok', ('allo', True)), ('ok', ('!$[].+$', True)), ('ok', ('.X11-unix', True))]
+    """
+    results=[]
+    for path_fragment in paths:
+        try:
+            path=os.path.join(src_dir, path_fragment)
+            code, resp=safe_can_write(path)
+            
+            results.append((code, (path_fragment, resp)))
+        except Exception,e:
+            results.append(("error", (path_fragment, e)))
+            
+    return results
+    
+
+def check_exist_paths(src_dir, paths):
+    """
+    >>> check_exist_paths("/tmp", ["allo", "!$[].+$", ".X11-unix"])
+    [('ok', ('allo', False)), ('ok', ('!$[].+$', False)), ('ok', ('.X11-unix', True))]
+    """
+    results=[]
+    for path_fragment in paths:
+        try:
+            path=os.path.join(src_dir, path_fragment)
+            exists=os.path.exists(path)
+            results.append(("ok", (path_fragment, exists)))
+        except Exception,e:
+            results.append(("error", (path_fragment, e)))
+            
+    return results
+        
+
+
 def safe_path_exists(path):
     try:
         return ("ok", os.path.exists(path))
