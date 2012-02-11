@@ -6,6 +6,8 @@ import json
 import boto
 from boto.exception import S3ResponseError
 
+from pyfnc import liste
+
 def get_all_keys(bucket, prefix):
     try:
         result=[]
@@ -17,6 +19,11 @@ def get_all_keys(bucket, prefix):
     except:
         return ("error", "S3 access")
     
+def key_name(keys):
+    l=liste()
+    for key in keys:
+        l.append(key.name)
+    return l
 
 
 def keys_to_dict(keys):

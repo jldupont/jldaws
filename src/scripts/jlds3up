@@ -34,7 +34,9 @@ def main():
         parser=argparse.ArgumentParser(description=DESC, fromfile_prefix_chars='@')
         parser.add_argument('-t',  dest='enable_simulate', action="store_true", help="Simulate processing", default=False)
         
-        parser.add_argument('-bn', dest='bucket_name', type=str, help="Bucket name", required=True)
+        parser.add_argument('-bn', dest='bucket_name',   type=str, help="Bucket name",   required=True)
+        parser.add_argument('-pr', dest='bucket_prefix', type=str, help="Bucket prefix", default=None)
+        
         parser.add_argument('-sp', dest='path_source', type=str, help="Path to source file",   required=True)
         parser.add_argument('-dp', dest='path_dest',   type=str, help="Path for destination file")        
 

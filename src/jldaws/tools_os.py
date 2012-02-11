@@ -2,8 +2,36 @@
     Created on 2012-01-19
     @author: jldupont
 """
-import os, errno
+import os, errno,re
 import subprocess
+
+RE_EXT=re.compile(r'^(.*?)\-(.*?)\.([a-zA-Z]+|[a-zA-Z]+\.[a-zA-Z]+)$')
+
+def split_path_version(path):
+    """
+    >>> print split_path_version("file.ext")
+    (None, None, None)
+    >>> print split_path_version("file-0.1.ext")
+    ('file', '0.1', 'ext')
+    >>> print split_path_version("file-0.1.1.ext")
+    ('file', '0.1.1', 'ext')
+    >>> print split_path_version("file-0.1.1.tar.gz")
+    ('file', '0.1.1', 'tar.gz')
+    >>> print split_path_version("file-0.1.1a.tar.gz")
+    ('file', '0.1.1a', 'tar.gz')
+    >>> print split_path_version("file-0.1b.1a.tar.gz")
+    ('file', '0.1b.1a', 'tar.gz')
+    >>> print split_path_version("file-0.1b.1-dev.tar.gz")
+    ('file', '0.1b.1-dev', 'tar.gz')
+    >>> print split_path_version("file-0.4.tar.gz")
+    ('file', '0.4', 'tar.gz')
+    """
+    try:
+        groups=RE_EXT.match(path).groups()
+        return groups
+    except:
+        return (None, None, None)
+    
 
 
 def safe_can_write(path):
