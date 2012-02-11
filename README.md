@@ -15,6 +15,7 @@ History
 * added 'jlds3download'
 * fixed bug in 'jlds3upload'
 * new dependency: 'pyfnc'
+* added 'jlds3up' : simple file upload
 
 0.2.5 : 
 

@@ -1,0 +1,58 @@
+#!/usr/bin/env python
+"""
+    S3 File Upload
+
+    @author: Jean-Lou Dupont
+"""
+import os, sys, argparse
+op=os.path
+
+try:
+    import jldaws
+except:
+    ### must be in dev mode then    
+    this_dir=op.dirname(__file__)
+    lib_path=op.abspath(op.join(this_dir, ".."))
+    sys.path.insert(0, lib_path)
+    import jldaws
+
+########################################################################
+
+DESC="Simple upload file to S3"
+DEFAULTS={
+          }
+
+def main():
+    try:
+        import jldaws.do_setup
+        import logging
+        import jldaws.do_checks
+        
+        from jldaws.tools_sys import dnorm
+        from jldaws.tools_logging import info_dump
+        
+        parser=argparse.ArgumentParser(description=DESC, fromfile_prefix_chars='@')
+        parser.add_argument('-t',  dest='enable_simulate', action="store_true", help="Simulate processing", default=False)
+        
+        parser.add_argument('-bn', dest='bucket_name', type=str, help="Bucket name", required=True)
+        parser.add_argument('-sp', dest='path_source', type=str, help="Path to source file",   required=True)
+        parser.add_argument('-dp', dest='path_dest',   type=str, help="Path for destination file")        
+
+        parser.add_argument('-do', dest='delete_old',  action="store_true", help="Delete old files")
+        
+        args=parser.parse_args()
+        
+        info_dump(vars(args), 20)
+        
+        from jldaws.script_s3up import run
+        run(**dnorm(vars(args)))
+
+    except KeyboardInterrupt:
+        logging.info("..Exiting")
+        sys.exit(0)##no probs
+        
+    except Exception,e:
+        logging.error(str(e))
+        sys.exit(1)
+        
+sys.exit(main())
