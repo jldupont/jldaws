@@ -54,7 +54,8 @@ def run(enable_simulate=False,
     
     root_name,version,_ext=split_path_version(base_name)
     if version is not None and len(version)>0:
-        logging.info("Version of file: %s" % version)
+        logging.info("Basename of file: %s" % version)
+        logging.info("Version of file:  %s" % version)
     else: 
         version=None
         
@@ -73,11 +74,11 @@ def run(enable_simulate=False,
         if not code.startswith("ok"):
             raise Exception("Can't get bucket keys...")
         
-        logging.info("Got %s keys to filter for 'old' files" % len(bkeys))
+        logging.info("Got %s key(s) to filter for 'old' files" % len(bkeys))
         
-        key_names, to_delete=filter_keys(root_name, bkeys)
+        _key_names, to_delete=filter_keys(root_name, bkeys)
         
-        logging.info("Older files found: %s" % key_names)
+        logging.info("Older files found: %s" % to_delete)
             
     if enable_simulate:
         logging.info("! Begin simulation...")

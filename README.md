@@ -10,6 +10,8 @@ Tests
 History
 =======
 
+0.2.7 : forgot to add 'jlds3up' to the scripts...
+
 0.2.6 :
 
 * added 'jlds3download'
