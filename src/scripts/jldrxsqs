@@ -39,10 +39,16 @@ def main():
         parser.add_argument('-bs',   dest="batch_size", type=int, help="Maximum batch size per interval", default=DEFS["batch_size"])
         parser.add_argument('-qn',   dest="queue_name", type=str, help="SQS queue name", required=True)
         parser.add_argument('-r',    dest="retry_always",  action="store_true", help="Always retry (includes backoff)", default=False)
+        parser.add_argument('-tr',   dest="wait_trigger",  action="store_true", help="Wait for stdin trigger", default=False)
+        
         args=parser.parse_args()
         
+        from jldaws.tools_sys import dnorm
+        from jldaws.tools_logging import info_dump
         from jldaws.script_rxsqs import run
-        run(args)
+        
+        info_dump(vars(args), 20)
+        run(**dnorm(vars(args)))
 
     except KeyboardInterrupt:
         logging.info("..Exiting")

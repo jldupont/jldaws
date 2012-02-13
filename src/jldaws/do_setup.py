@@ -2,7 +2,10 @@
     @author: Jean-Lou Dupont
 """
 
-import logging
+import logging,sys,os
+
+## force stdout flushing
+sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 0)
 
 FORMAT='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 formatter = logging.Formatter(FORMAT)

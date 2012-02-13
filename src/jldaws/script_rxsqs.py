@@ -9,7 +9,6 @@ from time import sleep
 from boto.sqs.jsonmessage import JSONMessage
 from boto.sqs.message     import RawMessage
 
-from tools_logging import info_dump
 from tools_sys import retry
 
 MAX_ERROR_COUNT=25
@@ -21,21 +20,15 @@ def stdout(s):
     except:
         pass
     sys.stdout.write(s)
+    sys.stdout.flush()
 
-def run(args):
+def run(queue_name=None, flush_queue=None,
+        batch_size=None, polling_interval=None,
+        format_any=None, propagate_error=None,
+        retry_always=None, wait_trigger=None ):
     
-    queue_name=args.queue_name.strip()
-    flush_queue=args.flush_queue
-    batch_size=args.batch_size
-    polling_interval=args.polling_interval
-    format_any=args.format_any
-    propagate_error=args.propagate_error
-    retry_always=args.retry_always
-   
     ## we need a minimum of second between polls
     polling_interval=max(1, polling_interval)
-   
-    info_dump(vars(args), 20)
    
     # SETUP PRIVATE QUEUE
     #####################
@@ -50,7 +43,8 @@ def run(args):
         return q 
         
     try:
-        q=retry(setup_private_queue, always=retry_always)    
+        q=retry(setup_private_queue, always=retry_always)
+        logging.info("Queue successfully created") 
     except Exception,e:
         raise Exception("Creating queue '%s': %s" % (queue_name, str(e)))
 
@@ -59,15 +53,18 @@ def run(args):
     if flush_queue:
         try:    
             q.clear()
-            logging.info("queue flushed")
+            logging.info("Queue flushed")
         except: pass
 
     error_count=0
 
     # MAIN LOOP
     ###########
-    logging.debug("Starting loop...")
+    logging.info("Starting loop...")
     while True:
+        
+        if wait_trigger:
+            _=sys.stdin.readline()
         
         try:
             msgs=q.get_messages(num_messages=batch_size)

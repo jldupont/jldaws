@@ -10,6 +10,11 @@ Tests
 History
 =======
 
+0.2.8 :
+
+* added "wait for stdin trigger" to jldrxsqs
+* fixed stdout flushing
+
 0.2.7 : forgot to add 'jlds3up' to the scripts...
 
 0.2.6 :

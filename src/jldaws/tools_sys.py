@@ -20,11 +20,12 @@ def coroutine(func):
 
 def jstdout(jo):
     sys.stdout.write(json.dumps(jo)+"\n")
-
+    sys.stdout.flush()
 
 def stdout(s):
     sys.stdout.write(s+"\n")
-
+    sys.stdout.flush()
+    
 def dnorm(d):
     """
     Normalize dictionary

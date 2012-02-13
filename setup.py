@@ -6,7 +6,7 @@
     @author: jldupont
 """
 __author__  ="Jean-Lou Dupont"
-__version__ ="0.2.7"
+__version__ ="0.2.8"
 
 
 from distutils.core import setup
@@ -20,7 +20,7 @@ This package contains a collection of Amazon Web Service related scripts e.g.
 
 * jlds3upload : automated file upload to S3
 * jlds3download : automated file download from S3
-* jldrxsqs : receive from an SQS queue to JSON/string stdout
+* jldrxsqs : receive from an SQS queue to JSON/string stdout (with optional stdin trigger)
 * jldtxsqs : transmit on SQS JSON/string from stdin
 * jldleader: distributed leader election protocol manager
 * jlds3up  : simple file upload to s3 with functionality to delete 'old' files
