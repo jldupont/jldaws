@@ -7,7 +7,10 @@ import logging,sys,os
 ## force stdout flushing
 sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 0)
 
-FORMAT='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+name=os.path.basename(sys.argv[0])
+fname="%-10s" % name
+
+FORMAT='%(asctime)s - '+fname+' - %(levelname)s - %(message)s'
 formatter = logging.Formatter(FORMAT)
 
 logging.basicConfig(level=logging.INFO, format=FORMAT)
