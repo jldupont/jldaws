@@ -10,7 +10,7 @@ echo "Tagging & submitting to Pypi, version:" $VERSION
 GIT=`which git`
 
 $GIT add .
-$GIT comment -m "version $VERSION"
+$GIT commit -m "version $VERSION"
 $GIT push origin master
 
 $GIT tag -a $VERSION -m "version $VERSION"
