@@ -80,8 +80,14 @@ def run(args):
     except Exception,e:
         raise Exception("Subscribing to topic '%s': %s" % (topic, str(e)))
     
-    logging.debug("Starting loop...")
+    ppid=os.getppid()
+    logging.info("Process pid: %s" % os.getpid())
+    logging.info("Parent pid: %s" % ppid)
+    logging.info("Starting loop...")
     while True:
+        if os.getppid()!=ppid:
+            logging.warning("Parent terminated... exiting")
+            break
         try:
             msgs=q.get_messages(num_messages=batch_size)
             if msgs is not None:

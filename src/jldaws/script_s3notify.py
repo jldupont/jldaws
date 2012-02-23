@@ -2,7 +2,7 @@
     Created on 2012-01-20
     @author: jldupont
 """
-import sys
+import sys, os
 import logging
 import copy
 from time import sleep
@@ -58,8 +58,15 @@ def run(args):
         
     info_dump(args._get_kwargs(), 20)
     
-    logging.debug("Starting loop...")
+    ppid=os.getppid()
+    logging.info("Process pid: %s" % os.getpid())
+    logging.info("Parent pid: %s" % ppid)
+    logging.info("Starting loop...")
     while True:
+        if os.getppid()!=ppid:
+            logging.warning("Parent terminated... exiting")
+            break
+
         logging.debug("Performing bucket 'get_all_keys'")
                 
         try:

@@ -95,7 +95,14 @@ def run(enable_simulate=False, bucket_name=None,
         logging.info("Begin simulation...")
     else:
         logging.debug("Starting loop...")
+
+    ppid=os.getppid()
+    logging.info("Process pid: %s" % os.getpid())
+    logging.info("Parent pid: %s" % ppid)
     while True:
+        if os.getppid()!=ppid:
+            logging.warning("Parent terminated... exiting")
+            break
         #################################################
 
         _code, path_exists=safe_path_exists(path_check)

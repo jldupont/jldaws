@@ -6,7 +6,7 @@
     @author: jldupont
 """
 __author__  ="Jean-Lou Dupont"
-__version__ ="0.2.8"
+__version__ ="0.2.9"
 
 
 from distutils.core import setup
@@ -44,6 +44,12 @@ Configuration
 Can be performed through options on the command line or using a file (use a leading `@`).
 """
 
+import os
+bp=os.path.dirname(os.path.abspath(__file__))
+sp=os.path.join(bp, "src", "scripts")
+scripts=os.listdir(sp)
+scripts=map(lambda p:os.path.join("src", "scripts", p), scripts)
+
 
 setup(name=         'jldaws',
       version=      __version__,
@@ -53,16 +59,15 @@ setup(name=         'jldaws',
       url=          'http://www.systemical.com/doc/opensource/jldaws',
       package_dir=  {'': "src",},
       packages=     find_packages("src"),
-      scripts=      ['src/scripts/jldexec',
-                     'src/scripts/jlds3notify',
-                     'src/scripts/jldtxsqs',
-                     'src/scripts/jldrxsqs',     
-                     'src/scripts/jlds3upload',
-                     'src/scripts/jlds3download',
-                     'src/scripts/jldleader',
-                     'src/scripts/jlds3up',
-                     ],
+
+      scripts=      scripts,
       zip_safe=False
       ,long_description=DESC
       ,install_requires=["pyfnc >= 0.1.2"]
       )
+
+#############################################
+
+f=open("latest", "w")
+f.write(str(__version__)+"\n")
+f.close()

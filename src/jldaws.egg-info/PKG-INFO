@@ -1,6 +1,10 @@
 Metadata-Version: 1.0
 Name: jldaws
+<<<<<<< Updated upstream
 Version: 0.2.8
+=======
+Version: 0.2.6
+>>>>>>> Stashed changes
 Summary: Collection of Amazon AWS related scripts
 Home-page: http://www.systemical.com/doc/opensource/jldaws
 Author: Jean-Lou Dupont

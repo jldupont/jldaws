@@ -129,7 +129,6 @@ def run_aws(node_id, proc, polling_interval, queue_name, topic_name, dst_path, d
           }
     
     poll_count=0
-    logging.info("Starting loop...")
 
     def cleanup():
         rm(dst_path)
@@ -138,7 +137,16 @@ def run_aws(node_id, proc, polling_interval, queue_name, topic_name, dst_path, d
             try:    sqs_conn.delete_queue(q)
             except: pass
     
+    ppid=os.getppid()
+    logging.info("Process pid: %s" % os.getpid())
+    logging.info("Parent pid: %s" % ppid)
+    logging.info("Starting loop...")
     while True:
+        if os.getppid()!=ppid:
+            logging.warning("Parent terminated... exiting")
+            cleanup()
+            break
+
         try:
             ## do a bit of garbage collection :)        
             global sigtermReceived

@@ -2,7 +2,7 @@
     Created on 2012-01-19
     @author: jldupont
 """
-import logging, sys
+import logging, sys, os
 import boto
 from time import sleep
 
@@ -60,8 +60,14 @@ def run(queue_name=None, flush_queue=None,
 
     # MAIN LOOP
     ###########
+    ppid=os.getppid()
+    logging.info("Process pid: %s" % os.getpid())
+    logging.info("Parent pid: %s" % ppid)
     logging.info("Starting loop...")
     while True:
+        if os.getppid()!=ppid:
+            logging.warning("Parent terminated... exiting")
+            break
         
         if wait_trigger:
             _=sys.stdin.readline()

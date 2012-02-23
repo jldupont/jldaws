@@ -10,6 +10,9 @@ Tests
 History
 =======
 
+
+0.2.9 : terminate script upon parent termination
+
 0.2.8 :
 
 * added "wait for stdin trigger" to jldrxsqs

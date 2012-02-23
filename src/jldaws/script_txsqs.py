@@ -2,7 +2,7 @@
     Created on 2012-01-19
     @author: jldupont
 """
-import logging, json, sys
+import logging, json, sys, os
 import boto
 from time import sleep
 
@@ -51,8 +51,14 @@ def run(args):
             logging.info("queue flushed")
         except: pass
 
+    ppid=os.getppid()
     logging.debug("Starting loop...")
+    logging.info("Process pid: %s" % os.getpid())
+    logging.info("Parent pid: %s" % ppid)
     while True:
+        if os.getppid()!=ppid:
+            logging.warning("Parent terminated... exiting")
+            break
         line=sys.stdin.readline()
         
         ## echo on stdout

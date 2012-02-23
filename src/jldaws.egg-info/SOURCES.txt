@@ -33,7 +33,14 @@ src/jldaws/mocks/__init__.py
 src/jldaws/mocks/echo.py
 src/jldaws/tests/Test_SimpleKV.py
 src/jldaws/tests/__init__.py
+src/scripts/ex_config_leader.txt
+src/scripts/ex_config_leader2.txt
+src/scripts/ex_config_rxsqs.txt
+src/scripts/ex_config_s3notify.txt
+src/scripts/ex_config_s3upload.txt
+src/scripts/ex_config_s3upload_d.txt
 src/scripts/jldexec
+src/scripts/jldexec_test
 src/scripts/jldleader
 src/scripts/jldrxsqs
 src/scripts/jlds3download
