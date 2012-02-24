@@ -2,7 +2,7 @@
     Created on 2012-01-19
     @author: jldupont
 """
-import logging, sys, os
+import logging, sys, os, json
 import boto
 from time import sleep
 
@@ -91,11 +91,14 @@ def run(queue_name=None, flush_queue=None,
         if msgs is not None:
             for msg in msgs:
                 
-                try:    b=msg._body
-                except: b=msg
-                
                 try:
-                    stdout(str(b))
+                    b=msg.get_body()
+                                        
+                    if format_any:
+                        stdout(b)
+                    else:
+                        stdout(json.dumps(b))
+                        
                     q.delete_message(msg)
                 except Exception, e:
                     logging.error("Can't process received msg: %s --> %s" % (str(b), e))
