@@ -25,7 +25,8 @@ def stdout(s):
 def run(queue_name=None, flush_queue=None,
         batch_size=None, polling_interval=None,
         format_any=None, propagate_error=None,
-        retry_always=None, wait_trigger=None ):
+        retry_always=None, wait_trigger=None,
+        trigger_none_msg=None ):
     
     ## we need a minimum of second between polls
     polling_interval=max(1, polling_interval)
@@ -86,6 +87,14 @@ def run(queue_name=None, flush_queue=None,
                 continue
             
             raise Exception("Exiting because of excessive decode error")
+        
+        ### take care of sending a specified string when
+        ### there are no messages in the queue & we are in "trigger mode"
+        if msgs is None:
+            if wait_trigger:
+                if trigger_none_msg is not None:
+                    stdout(trigger_none_msg+"\n")
+                    continue
             
         ### normal flow
         if msgs is not None:

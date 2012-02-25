@@ -10,6 +10,7 @@ Tests
 History
 =======
 
+0.2.12 : added '-trm' option to jldrxsqs
 
 0.2.9 : terminate script upon parent termination
 
