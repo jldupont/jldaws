@@ -6,7 +6,7 @@
     @author: jldupont
 """
 __author__  ="Jean-Lou Dupont"
-__version__ ="0.2.12"
+__version__ ="0.2.13"
 
 
 from distutils.core import setup

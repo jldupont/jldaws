@@ -90,7 +90,7 @@ def run(queue_name=None, flush_queue=None,
         
         ### take care of sending a specified string when
         ### there are no messages in the queue & we are in "trigger mode"
-        if msgs is None:
+        if msgs is None or len(msgs)==0:
             if wait_trigger:
                 if trigger_none_msg is not None:
                     stdout(trigger_none_msg+"\n")
@@ -104,14 +104,15 @@ def run(queue_name=None, flush_queue=None,
                     b=msg.get_body()
                                         
                     if format_any:
-                        stdout(b)
+                        stdout(b+"\n")
                     else:
-                        stdout(json.dumps(b))
+                        stdout(json.dumps(b)+"\n")
                         
                     q.delete_message(msg)
                 except Exception, e:
                     logging.error("Can't process received msg: %s --> %s" % (str(b), e))
         
-        logging.debug("...sleeping for %s seconds" % polling_interval)
-        sleep(polling_interval)
+        if not wait_trigger:
+            logging.debug("...sleeping for %s seconds" % polling_interval)
+            sleep(polling_interval)
 
