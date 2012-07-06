@@ -4,6 +4,7 @@
 
     @author: Jean-Lou Dupont
 """
+__version__="0.1"
 import os, sys, argparse
 op=os.path
 
@@ -18,7 +19,7 @@ except:
 
 ########################################################################
 
-DESC="Executes script based on SNS message received on a specific topic"
+DESC="Executes script based on SNS message received on a specific topic - %s" % __version__
 DEFAULTS={
           "polling_interval": 30
           ,"batch_size": 10
