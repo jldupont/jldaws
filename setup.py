@@ -24,6 +24,7 @@ This package contains a collection of Amazon Web Service related scripts e.g.
 * jldtxsqs : transmit on SQS JSON/string from stdin
 * jldleader: distributed leader election protocol manager
 * jlds3up  : simple file upload to s3 with functionality to delete 'old' files
+* jlds3list : listing files in an S3 bucket
 
 The philosophy behind these scripts is:
 
