@@ -5,7 +5,7 @@
 
     @author: Jean-Lou Dupont
 """
-__version__="0.1"
+__version__="0.2"
 import os, sys, argparse
 op=os.path
 
@@ -41,7 +41,10 @@ def main():
         parser.add_argument('-qn',   dest="queue_name", type=str, help="SQS queue name", required=True)
         parser.add_argument('-r',    dest="retry_always",  action="store_true", help="Always retry (includes backoff)", default=False)
         parser.add_argument('-trm',  dest="trigger_none_msg", type=str, help="String to send on stdout when no queue message available (trigger mode only)", default=None)
-        parser.add_argument('-tr',   dest="wait_trigger",  action="store_true", help="Wait for stdin trigger", default=False)
+        parser.add_argument('-tr',   dest="wait_trigger",   action="store_true", help="Wait for stdin trigger", default=False)
+        parser.add_argument('-trt',  dest="trigger_topic",  type=str, help="Trigger topic (JSON mode)", default=None)
+        parser.add_argument('-doe',  dest="delete_on_error", action="store_true", help="Delete message on processing error", default=False)
+        parser.add_argument('-dpt',  dest="dont_pass_through", action="store_true", help="Don't pass through stdin-->stdout", default=False)
         
         args=parser.parse_args()
         

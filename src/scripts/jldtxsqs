@@ -5,7 +5,7 @@
 
     @author: Jean-Lou Dupont
 """
-__version__="0.1"
+__version__="0.2"
 import os, sys, argparse
 op=os.path
 
@@ -20,7 +20,13 @@ except:
 
 ########################################################################
 
-DESC="Send JSON object to an SQS queue - %s" % __version__
+DESC="""Send JSON object to an SQS queue - v%s -
+
+Messages can be sent clear text or JSON encoded.
+
+When using the '-tp' option, the topic of a message must be included in the member 'topic' e.g.
+ {"topic": "some_topic"}  where the 'topic' field is matched using 'starts with' method.
+""" % __version__
 DEFAULTS={
           }
 
@@ -34,7 +40,9 @@ def main():
         parser.add_argument('-qn', dest='queue_name',   type=str,            help="SQS queue name to send to", required=True)
         parser.add_argument('-w',  dest="format_any",   action="store_true", help="Any message format accepted i.e. not just JSON", default=False)        
         parser.add_argument('-fq', dest="flush_queue",  action="store_true", help="Flush SQS queue at startup")
-        parser.add_argument('-r',  dest="retry_always", action="store_true", help="Always retry (includes backoff)", default=False)        
+        parser.add_argument('-r',  dest="retry_always", action="store_true", help="Always retry (includes backoff)", default=False)
+        parser.add_argument('-tp', dest='topics',       type=str, nargs='+', help="Topic(s) to subscribe to (only when using JSON)", default=None)
+                
         args=parser.parse_args()
         
         from jldaws.script_txsqs import run

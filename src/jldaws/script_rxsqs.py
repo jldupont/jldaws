@@ -26,7 +26,8 @@ def run(queue_name=None, flush_queue=None,
         batch_size=None, polling_interval=None,
         format_any=None, propagate_error=None,
         retry_always=None, wait_trigger=None,
-        trigger_none_msg=None ):
+        trigger_none_msg=None, trigger_topic=None,
+        delete_on_error=False, dont_pass_through=False ):
     
     ## we need a minimum of second between polls
     polling_interval=max(1, polling_interval)
@@ -70,9 +71,32 @@ def run(queue_name=None, flush_queue=None,
             logging.warning("Parent terminated... exiting")
             break
         
-        if wait_trigger:
-            _=sys.stdin.readline()
         
+        if wait_trigger or trigger_topic is not None:
+            line=sys.stdin.readline().strip()
+
+            if not dont_pass_through:
+                stdout(line)
+
+        if trigger_topic is not None:
+            if len(line)==0:
+                continue
+            try:
+                jo=json.loads(line)
+            except:
+                logging.error("Can't JSON decode: %s" % line)
+                continue
+            
+            try:
+                topic=jo["topic"]
+                #logging.info("Found topic: %s" % topic)
+                if topic!=trigger_topic:
+                    continue
+            except:
+                logging.error("Input JSON doesn't have a 'topic' field")
+                continue
+            
+       
         try:
             msgs=q.get_messages(num_messages=batch_size)
             error_count=0
@@ -110,9 +134,11 @@ def run(queue_name=None, flush_queue=None,
                         
                     q.delete_message(msg)
                 except Exception, e:
+                    if delete_on_error:
+                        q.delete_message(msg)
                     logging.error("Can't process received msg: %s --> %s" % (str(b), e))
         
-        if not wait_trigger:
+        if not wait_trigger and trigger_topic is None:
             logging.debug("...sleeping for %s seconds" % polling_interval)
             sleep(polling_interval)
 

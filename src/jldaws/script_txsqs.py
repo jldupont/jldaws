@@ -27,6 +27,7 @@ def run(args):
     flush_queue=args.flush_queue
     format_any=args.format_any
     retry_always=args.retry_always
+    topics=args.topics
    
     info_dump(vars(args), 20)
     
@@ -64,11 +65,28 @@ def run(args):
         ## echo on stdout
         stdout(line)
         
+        ## by default, allow the message to pass to the queue
+        allow_msg=True
         if not format_any:
             try:
                 jo=json.loads(line)
             except:
                 logging.error("Can't load json object from: %s" % line)
+                continue
+            
+            if topics is not None:
+                try:
+                    msg_topic=jo["topic"]
+                except:
+                    logging.error("Can't extract 'topic' field from %s: " % line)
+                    continue
+                try:
+                    allow_msg=any(map(lambda s:msg_topic.startswith(s), topics))
+                except Exception,e:
+                    logging.error("Error processing message topic against list of topics: %s" % e)
+                    continue
+            
+            if not allow_msg:
                 continue
             
             m=JSONMessage()
