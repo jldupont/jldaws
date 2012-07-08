@@ -32,7 +32,7 @@ def main():
         from jldaws.tools_sys import dnorm
         from jldaws.tools_logging import info_dump
         
-        parser=argparse.ArgumentParser(description=DESC, fromfile_prefix_chars='@')
+        parser=argparse.ArgumentParser(description=DESC, fromfile_prefix_chars='@', formatter_class=argparse.RawTextHelpFormatter)
         
         parser.add_argument('-bn', dest='bucket_name',   type=str, help="Bucket name",   required=True)
         parser.add_argument('-pr', dest='bucket_prefix', type=str, help="Bucket prefix", default=None)

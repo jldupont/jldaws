@@ -6,6 +6,10 @@ Tests
 
 *nose* can be used to run tests.
 
+Current work items
+==================
+
+- better formatting of help messages
 
 History
 =======

@@ -20,7 +20,7 @@ except:
 
 ########################################################################
 
-DESC="""Send JSON object to an SQS queue - v%s -
+DESC="""Send JSON object to an SQS queue - v%s
 
 Messages can be sent clear text or JSON encoded.
 
@@ -36,7 +36,7 @@ def main():
         import logging
         import jldaws.do_checks
         
-        parser=argparse.ArgumentParser(description=DESC, fromfile_prefix_chars='@')
+        parser=argparse.ArgumentParser(description=DESC, fromfile_prefix_chars='@', formatter_class=argparse.RawTextHelpFormatter)
         parser.add_argument('-qn', dest='queue_name',   type=str,            help="SQS queue name to send to", required=True)
         parser.add_argument('-w',  dest="format_any",   action="store_true", help="Any message format accepted i.e. not just JSON", default=False)        
         parser.add_argument('-fq', dest="flush_queue",  action="store_true", help="Flush SQS queue at startup")

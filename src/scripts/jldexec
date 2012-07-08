@@ -31,7 +31,7 @@ def main():
         import logging
         import jldaws.do_checks
         
-        parser=argparse.ArgumentParser(description=DESC)
+        parser=argparse.ArgumentParser(description=DESC, formatter_class=argparse.RawTextHelpFormatter)
         parser.add_argument('-tn', dest='topic',       type=str, help="Topic to subscribe to", required=True)
         parser.add_argument('-mn', dest='module_name', type=str, help="Python module name to execute 'run' callable OR 'None'", required=True)
         parser.add_argument('-p',  type=int, dest="polling_interval", action="store", help="Polling interval in seconds", default=DEFAULTS["polling_interval"])
