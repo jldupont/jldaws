@@ -9,7 +9,7 @@ Tests
 Current work items
 ==================
 
-- better formatting of help messages
+0.2.16: better formatting of help messages, fixed bug in jldrxsqs
 
 History
 =======

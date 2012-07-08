@@ -115,7 +115,7 @@ def run(queue_name=None, flush_queue=None,
         ### take care of sending a specified string when
         ### there are no messages in the queue & we are in "trigger mode"
         if msgs is None or len(msgs)==0:
-            if wait_trigger:
+            if wait_trigger or trigger_topic is not None:
                 if trigger_none_msg is not None:
                     stdout(trigger_none_msg+"\n")
                     continue
