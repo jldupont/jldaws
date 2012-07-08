@@ -20,7 +20,7 @@ except:
 
 ########################################################################
 
-DESC="Receive JSON object from an SQS queue - %s" % __version__
+DESC="""Receive JSON object from an SQS queue - v%s""" % __version__
 DEFS={
           "batch_size": 10
           ,"polling_interval": 30
