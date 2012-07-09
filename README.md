@@ -14,6 +14,8 @@ Current work items
 History
 =======
 
+0.2.19: added '-em' option to jldrxsqs
+
 0.2.18: added '-se' option to jldtxsqs and jldrxsqs
 
 0.2.17: added '-em' option to jldtxsqs

@@ -28,7 +28,7 @@ def run(queue_name=None, flush_queue=None,
         retry_always=None, wait_trigger=None,
         trigger_none_msg=None, trigger_topic=None,
         delete_on_error=False, dont_pass_through=False,
-        simulate_error=False ):
+        simulate_error=False, error_msg=None ):
     
     ## we need a minimum of second between polls
     polling_interval=max(1, polling_interval)
@@ -105,8 +105,16 @@ def run(queue_name=None, flush_queue=None,
             msgs=q.get_messages(num_messages=batch_size)
             error_count=0
         except Exception, e:
+            
+            if error_msg is not None:
+                try:    msg=error_msg % str(e)
+                except: msg=error_msg
+                stdout(msg)
+                continue
+                
             if propagate_error:
                 stdout('''{"error": "%s"}''' % str(e))
+                
             if retry_always:
                 continue
         
@@ -114,7 +122,7 @@ def run(queue_name=None, flush_queue=None,
             if error_count<MAX_ERROR_COUNT:
                 continue
             
-            raise Exception("Exiting because of excessive decode error")
+            raise Exception("Exiting because of excessive network or decode error")
         
         ### take care of sending a specified string when
         ### there are no messages in the queue & we are in "trigger mode"

@@ -20,7 +20,10 @@ except:
 
 ########################################################################
 
-DESC="""Receive JSON object from an SQS queue - v%s""" % __version__
+DESC="""Receive JSON object from an SQS queue - v%s
+
+The option '-em' can be used with a python 'format string' \%s to retrieve exception message. If this option is used, network errors won't cause the program to raise exceptions.
+""" % __version__
 DEFS={
           "batch_size": 10
           ,"polling_interval": 30
@@ -46,6 +49,7 @@ def main():
         parser.add_argument('-doe',  dest="delete_on_error", action="store_true", help="Delete message on processing error", default=False)
         parser.add_argument('-dpt',  dest="dont_pass_through", action="store_true", help="Don't pass through stdin-->stdout", default=False)
         parser.add_argument('-se',   dest="simulate_error", action="store_true", help="Simulate a network error accessing SQS", default=False)
+        parser.add_argument('-em',   dest="error_msg",    type=str,            help="String to send on stdout when a receive error is detected", default=None)
         
         args=parser.parse_args()
         
