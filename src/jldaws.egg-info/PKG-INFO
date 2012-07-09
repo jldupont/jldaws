@@ -1,6 +1,6 @@
 Metadata-Version: 1.0
 Name: jldaws
-Version: 0.2.16
+Version: 0.2.17
 Summary: Collection of Amazon AWS related scripts
 Home-page: http://www.systemical.com/doc/opensource/jldaws
 Author: Jean-Lou Dupont
@@ -37,5 +37,10 @@ Description:
         -------------
         
         Can be performed through options on the command line or using a file (use a leading `@`).
+        
+        History
+        -------
+        
+        Changes history can be found at the project page: https://github.com/jldupont/jldaws
         
 Platform: UNKNOWN

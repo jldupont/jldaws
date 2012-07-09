@@ -9,10 +9,14 @@ Tests
 Current work items
 ==================
 
-0.2.16: better formatting of help messages, fixed bug in jldrxsqs
+
 
 History
 =======
+
+0.2.17: added '-em' option to jldtxsqs
+
+0.2.16: better formatting of help messages, fixed bug in jldrxsqs
 
 0.2.12 : added '-trm' option to jldrxsqs
 

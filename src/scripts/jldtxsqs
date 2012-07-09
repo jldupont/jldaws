@@ -1,11 +1,12 @@
 #!/usr/bin/env python
 """
-    
     Transmit JSON object/string to an SQS queue
 
     @author: Jean-Lou Dupont
+    
+    v0.3: added '-em' option
 """
-__version__="0.2"
+__version__="0.3"
 import os, sys, argparse
 op=os.path
 
@@ -42,6 +43,7 @@ def main():
         parser.add_argument('-fq', dest="flush_queue",  action="store_true", help="Flush SQS queue at startup")
         parser.add_argument('-r',  dest="retry_always", action="store_true", help="Always retry (includes backoff)", default=False)
         parser.add_argument('-tp', dest='topics',       type=str, nargs='+', help="Topic(s) to subscribe to (only when using JSON)", default=None)
+        parser.add_argument('-em', dest="error_msg",    type=str,            help="String to send on stdout when an error is detected", default=None)
                 
         args=parser.parse_args()
         

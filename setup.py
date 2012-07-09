@@ -6,7 +6,7 @@
     @author: jldupont
 """
 __author__  ="Jean-Lou Dupont"
-__version__ ="0.2.16"
+__version__ ="0.2.17"
 
 
 from distutils.core import setup
@@ -43,6 +43,11 @@ Configuration
 -------------
 
 Can be performed through options on the command line or using a file (use a leading `@`).
+
+History
+-------
+
+Changes history can be found at the project page: https://github.com/jldupont/jldaws
 """
 
 import os

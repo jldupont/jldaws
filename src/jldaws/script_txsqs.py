@@ -3,14 +3,14 @@
     @author: jldupont
 """
 import logging, json, sys, os
+from   time import sleep
 import boto
-from time import sleep
 
 from boto.sqs.jsonmessage import JSONMessage
-from boto.sqs.message import RawMessage
+from boto.sqs.message     import RawMessage
 
 from tools_logging import info_dump
-from tools_sys import retry
+from tools_sys     import retry
 
 
 def stdout(s):
@@ -20,6 +20,7 @@ def stdout(s):
     except:
         pass
     sys.stdout.write(s)
+    sys.stdout.flush()
 
 def run(args):
     
@@ -28,6 +29,7 @@ def run(args):
     format_any=args.format_any
     retry_always=args.retry_always
     topics=args.topics
+    error_msg=args.error_msg
    
     info_dump(vars(args), 20)
     
@@ -55,7 +57,7 @@ def run(args):
     ppid=os.getppid()
     logging.debug("Starting loop...")
     logging.info("Process pid: %s" % os.getpid())
-    logging.info("Parent pid: %s" % ppid)
+    logging.info("Parent pid:  %s" % ppid)
     while True:
         if os.getppid()!=ppid:
             logging.warning("Parent terminated... exiting")
@@ -107,6 +109,9 @@ def run(args):
                 if retry_always:
                     logging.error("Can't write to SQS queue - 2nd attempt in a row: %s" % e)
                 else:
-                    raise Exception("Writing to SQS queue")
+                    if error_msg is not None:
+                        stdout(error_msg)
+                    else:
+                        raise Exception("Writing to SQS queue")
 
         
