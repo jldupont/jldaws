@@ -6,7 +6,7 @@
     
     v0.3: added '-em' option
 """
-__version__="0.3"
+__version__="0.4"
 import os, sys, argparse
 op=os.path
 
@@ -44,6 +44,7 @@ def main():
         parser.add_argument('-r',  dest="retry_always", action="store_true", help="Always retry (includes backoff)", default=False)
         parser.add_argument('-tp', dest='topics',       type=str, nargs='+', help="Topic(s) to subscribe to (only when using JSON)", default=None)
         parser.add_argument('-em', dest="error_msg",    type=str,            help="String to send on stdout when an error is detected", default=None)
+        parser.add_argument('-se', dest="simulate_error", action="store_true", help="Simulate a network error accessing SQS", default=False)
                 
         args=parser.parse_args()
         

@@ -30,6 +30,7 @@ def run(args):
     retry_always=args.retry_always
     topics=args.topics
     error_msg=args.error_msg
+    simulate_error=args.simulate_error
    
     info_dump(vars(args), 20)
     
@@ -99,11 +100,15 @@ def run(args):
         
         logging.debug("Writing to SQS queue '%s': %s" % (queue_name, line))
         try:
+            if simulate_error:
+                raise Exception("Network error simulation")
             q.write(m)
         except:
             ### give us a chance...
             sleep(1)
             try:
+                if simulate_error:
+                    raise Exception("Network error simulation - 2nd attempt")                
                 q.write(m)
             except Exception,e:
                 if retry_always:

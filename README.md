@@ -14,6 +14,8 @@ Current work items
 History
 =======
 
+0.2.18: added '-se' option to jldtxsqs and jldrxsqs
+
 0.2.17: added '-em' option to jldtxsqs
 
 0.2.16: better formatting of help messages, fixed bug in jldrxsqs

@@ -27,7 +27,8 @@ def run(queue_name=None, flush_queue=None,
         format_any=None, propagate_error=None,
         retry_always=None, wait_trigger=None,
         trigger_none_msg=None, trigger_topic=None,
-        delete_on_error=False, dont_pass_through=False ):
+        delete_on_error=False, dont_pass_through=False,
+        simulate_error=False ):
     
     ## we need a minimum of second between polls
     polling_interval=max(1, polling_interval)
@@ -98,6 +99,9 @@ def run(queue_name=None, flush_queue=None,
             
        
         try:
+            if simulate_error:
+                raise Exception("Network error simulation")
+            
             msgs=q.get_messages(num_messages=batch_size)
             error_count=0
         except Exception, e:
