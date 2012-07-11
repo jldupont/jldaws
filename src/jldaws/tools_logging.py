@@ -21,3 +21,16 @@ def info_dump(d, align):
             key, value=el
             logging.info(fmt % (key, value))
         
+def setloglevel(level_name):
+    """
+    >>> import logging
+    >>> setloglevel("info")
+    >>> logging.debug("test")
+    
+    """
+    try:
+        ll=getattr(logging, level_name.upper())
+        logger=logging.getLogger()
+        logger.setLevel(ll)
+    except:
+        raise Exception("Invalid log level name: %s" % level_name)

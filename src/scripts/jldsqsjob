@@ -1,0 +1,77 @@
+#!/usr/bin/env python
+"""
+    Triggered reception of SQS messages, queuing back to another SQS queue, delete original
+
+
+    @author: Jean-Lou Dupont
+"""
+__version__="0.1"
+import os, sys, argparse
+op=os.path
+
+try:
+    import jldaws
+except:
+    ### must be in dev mode then    
+    this_dir=op.dirname(__file__)
+    lib_path=op.abspath(op.join(this_dir, ".."))
+    sys.path.insert(0, lib_path)
+    import jldaws
+
+########################################################################
+
+DESC="""Receive from SQS queue, queue to another SQS queue, delete original - v%s
+
+This utility enables controlling jobs queued on SQS by (1) triggered dequeuing a message M from Q1, sending M through stdout & Q2, deleting M from Q1.
+If the local processing of M fails, a secondary process can act upon the information received on Q2 to recover.    
+""" % __version__
+DEFS={
+          "batch_size": 1
+          ,"write_delay": 10*60
+          }
+
+def main():
+    try:
+        import jldaws.do_setup
+        import logging
+        import jldaws.do_checks
+        from   jldaws.tools_logging import setloglevel
+        
+        parser=argparse.ArgumentParser(description=DESC, fromfile_prefix_chars='@', formatter_class=argparse.RawTextHelpFormatter)       
+        parser.add_argument('-w',    dest="format_any",       action="store_true", help="Any message format accepted i.e. not just JSON", default=False)        
+        parser.add_argument('-fq',   dest="flush_queue",      action="store_true", help="Flush input SQS queue at startup")
+        parser.add_argument('-lne',  dest="log_network_error",action="store_true", help="Log network errors")
+        parser.add_argument('-bs',   dest="batch_size",       type=int,            help="Maximum batch size per interval", default=DEFS["batch_size"])
+        parser.add_argument('-ds',   dest="write_delay",      type=int,            help="Output SQS queue 'delay_seconds' parameter", default=DEFS["write_delay"])
+        parser.add_argument('-qn',   dest="queue_name",       type=str,            help="Input SQS queue name", required=True)
+        parser.add_argument('-oqn',  dest="queue_name_output",type=str,            help="Output SQS queue name", required=True)
+        parser.add_argument('-trm',  dest="trigger_none_msg", type=str,            help="String to send on stdout when no queue message available (trigger mode only)", default=None)
+        parser.add_argument('-trt',  dest="trigger_topic",    type=str,            help="Trigger topic (JSON mode)", required=True)
+        parser.add_argument('-doe',  dest="delete_on_error",  action="store_true", help="Delete message on processing error", default=False)
+        parser.add_argument('-dpt',  dest="dont_pass_through",action="store_true", help="Don't pass through stdin-->stdout", default=False)
+        parser.add_argument('-se',   dest="simulate_error",   action="store_true", help="Simulate a network error accessing SQS", default=False)
+        parser.add_argument('-em',   dest="error_msg",        type=str,            help="String to send on stdout when a receive error is detected", default=None)
+        parser.add_argument('-ll',   dest="loglevel",         type=str,            help="Logging Level", choices=["debug", "info", "warning", "error"], default="info")
+        
+        args=parser.parse_args()
+        
+        from jldaws.tools_sys     import dnorm
+        from jldaws.tools_logging import info_dump
+        from jldaws.script_sqsjob import run
+        
+        args=dnorm(vars(args))
+        setloglevel(args["loglevel"])
+        
+        info_dump(args, 20)
+        run(**args)
+
+    except KeyboardInterrupt:
+        logging.info("..Exiting")
+        sys.exit(0)##no probs
+        
+    except Exception,e:
+        logging.error(str(e))
+        sys.exit(1)
+        
+
+sys.exit(main())

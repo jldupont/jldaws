@@ -6,7 +6,7 @@
     @author: jldupont
 """
 __author__  ="Jean-Lou Dupont"
-__version__ ="0.2.19"
+__version__ ="0.3.0"
 
 
 from distutils.core import setup
@@ -18,6 +18,7 @@ Overview
 
 This package contains a collection of Amazon Web Service related scripts e.g.
 
+* jldsqsjob : wait for stdin trigger, dequeue msg(s) from SQS Q#1, send to stdout, requeue to SQS Q#2, delete msg(s) from Q#1
 * jlds3upload : automated file upload to S3
 * jlds3download : automated file download from S3
 * jldrxsqs : receive from an SQS queue to JSON/string stdout (with optional stdin trigger)
