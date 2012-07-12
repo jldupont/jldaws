@@ -4,7 +4,7 @@
 
     @author: Jean-Lou Dupont
 """
-__version__="0.1"
+__version__="0.2"
 import os, sys, argparse
 op=os.path
 
@@ -19,7 +19,7 @@ except:
 
 ########################################################################
 
-DESC="Simple upload file to S3 - version %s" % __version__
+DESC="Simple S3 bucket listing - version %s" % __version__
 DEFAULTS={
           }
 
@@ -34,9 +34,10 @@ def main():
         
         parser=argparse.ArgumentParser(description=DESC, fromfile_prefix_chars='@', formatter_class=argparse.RawTextHelpFormatter)
         
-        parser.add_argument('-bn', dest='bucket_name',   type=str, help="Bucket name",   required=True)
-        parser.add_argument('-pr', dest='bucket_prefix', type=str, help="Bucket prefix", default=None)
-        parser.add_argument('-af', dest='alternate_format', action="store_true", help="Alternate format", default=False)
+        parser.add_argument('-bn',  dest='bucket_name',   type=str, help="Bucket name",   required=True)
+        parser.add_argument('-pr',  dest='bucket_prefix', type=str, help="Bucket prefix", default=None)
+        parser.add_argument('-af',  dest='alternate_format', action="store_true", help="Alternate format", default=False)
+        parser.add_argument('-jbn', dest='just_basename',    action="store_true", help="Output just the basename", default=False)
         
         args=parser.parse_args()
         

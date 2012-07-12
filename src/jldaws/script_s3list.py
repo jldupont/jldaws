@@ -2,12 +2,15 @@
     Created on 2012-01-20
     @author: jldupont
 """
-import logging
+import logging, os
 
 import boto
 from boto.s3.key import Key as S3Key
 
-def run(bucket_name=None, bucket_prefix=None, alternate_format=False):
+def run(bucket_name=None, bucket_prefix=None, 
+        alternate_format=False,
+        just_basename=False
+        ):
     
     try:
         conn = boto.connect_s3()
@@ -42,4 +45,7 @@ def run(bucket_name=None, bucket_prefix=None, alternate_format=False):
     
     for key in liste:
         if not key.name.endswith("/"):
-            print "%s%s" % (_base_format, key.name)
+            if just_basename:
+                print os.path.basename(key.name)
+            else:
+                print "%s%s" % (_base_format, key.name)

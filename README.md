@@ -14,6 +14,8 @@ Current work items
 History
 =======
 
+0.3.1: added '-jbn' to jlds3list
+
 0.3.0: introduction of 'jldsqsjob'
 
 0.2.19: added '-em' option to jldrxsqs
