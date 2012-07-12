@@ -14,6 +14,8 @@ Current work items
 History
 =======
 
+0.3.2: added trigger feature to jlds3list
+
 0.3.1: added '-jbn' to jlds3list
 
 0.3.0: introduction of 'jldsqsjob'
