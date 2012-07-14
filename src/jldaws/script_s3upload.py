@@ -25,7 +25,8 @@ def report(ctx, ctx2):
 
 def run(enable_simulate=False, bucket_name=None, 
         path_source=None, path_moveto=None, path_check=None,
-        num_files=5, enable_delete=False, propagate_error=False, prefix=None, polling_interval=None):
+        num_files=5, enable_delete=False, propagate_error=False, prefix=None, polling_interval=None
+        ,**_):
     
     #if args.enable_debug:
     #    logger=logging.getLogger()

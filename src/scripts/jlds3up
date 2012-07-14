@@ -9,13 +9,13 @@ import os, sys, argparse
 op=os.path
 
 try:
-    import jldaws
+    import jldaws #@UnusedImport
 except:
     ### must be in dev mode then    
     this_dir=op.dirname(__file__)
     lib_path=op.abspath(op.join(this_dir, ".."))
     sys.path.insert(0, lib_path)
-    import jldaws
+    import jldaws #@UnusedImport
 
 ########################################################################
 
@@ -25,12 +25,9 @@ DEFAULTS={
 
 def main():
     try:
-        import jldaws.do_setup
+        import jldaws.do_setup  #@UnusedImport
         import logging
-        import jldaws.do_checks
-        
-        from jldaws.tools_sys import dnorm
-        from jldaws.tools_logging import info_dump
+        import jldaws.do_checks #@UnusedImport
         
         parser=argparse.ArgumentParser(description=DESC, fromfile_prefix_chars='@', formatter_class=argparse.RawTextHelpFormatter)
         parser.add_argument('-t',  dest='enable_simulate', action="store_true", help="Simulate processing", default=False)
@@ -43,12 +40,11 @@ def main():
 
         parser.add_argument('-do', dest='delete_old',  action="store_true", help="Delete old files")
         
-        args=parser.parse_args()
-        
-        info_dump(vars(args), 20)
-        
         from jldaws.script_s3up import run
-        run(**dnorm(vars(args)))
+        from jldaws.tools_sys import process_command_line
+        args=process_command_line(parser)
+        run(**args)
+
 
     except KeyboardInterrupt:
         logging.info("..Exiting")

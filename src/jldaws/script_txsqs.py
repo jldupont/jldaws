@@ -9,7 +9,6 @@ import boto
 from boto.sqs.jsonmessage import JSONMessage
 from boto.sqs.message     import RawMessage
 
-from tools_logging import info_dump
 from tools_sys     import retry
 
 
@@ -22,17 +21,17 @@ def stdout(s):
     sys.stdout.write(s)
     sys.stdout.flush()
 
-def run(args):
+def run(queue_name=None,
+        flush_queue=None,
+        format_any=None,
+        retry_always=None,
+        topics=None,
+        error_msg=None,
+        simulate_error=None,
+        **_
+        ):
     
-    queue_name=args.queue_name.strip()
-    flush_queue=args.flush_queue
-    format_any=args.format_any
-    retry_always=args.retry_always
-    topics=args.topics
-    error_msg=args.error_msg
-    simulate_error=args.simulate_error
-   
-    info_dump(vars(args), 20)
+    queue_name=queue_name.strip()
     
     # SETUP PRIVATE QUEUE
     def setup_private_queue():

@@ -9,13 +9,13 @@ import os, sys, argparse
 op=os.path
 
 try:
-    import jldaws
+    import jldaws #@UnusedImport
 except:
     ### must be in dev mode then    
     this_dir=op.dirname(__file__)
     lib_path=op.abspath(op.join(this_dir, ".."))
     sys.path.insert(0, lib_path)
-    import jldaws
+    import jldaws #@UnusedImport
 
 ########################################################################
 
@@ -27,16 +27,16 @@ DEFAULTS={
 
 def main():
     try:
-        import jldaws.do_setup
+        import jldaws.do_setup  #@UnusedImport
         import logging
-        import jldaws.do_checks
+        import jldaws.do_checks #@UnusedImport
         
         parser=argparse.ArgumentParser(description=DESC, formatter_class=argparse.RawTextHelpFormatter)
         parser.add_argument('-tn', dest='topic',       type=str, help="Topic to subscribe to", required=True)
         parser.add_argument('-mn', dest='module_name', type=str, help="Python module name to execute 'run' callable OR 'None'", required=True)
-        parser.add_argument('-p',  type=int, dest="polling_interval", action="store", help="Polling interval in seconds", default=DEFAULTS["polling_interval"])
-        parser.add_argument('-j',             dest="enable_json",    action="store_true", help="Outputs JSON object to stdout")
-        parser.add_argument('-bs',          type=int, nargs=1, dest="batch_size",  action="store", help="Maximum message batch size to process per interval", default=DEFAULTS["batch_size"])
+        parser.add_argument('-p',  dest="polling_interval", type=int,   action="store", help="Polling interval in seconds", default=DEFAULTS["polling_interval"])
+        parser.add_argument('-j',  dest="enable_json",      action="store_true", help="Outputs JSON object to stdout")
+        parser.add_argument('-bs', dest="batch_size",       type=int, nargs=1,   action="store", help="Maximum message batch size to process per interval", default=DEFAULTS["batch_size"])
         args=parser.parse_args()
         
         from jldaws.script_exec import run

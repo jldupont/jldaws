@@ -26,7 +26,8 @@ def gen_key(prefix, name):
 def run(enable_simulate=False, 
         bucket_name=None, bucket_prefix=None, 
         path_source=None, path_dest=None,
-        delete_old=False):
+        delete_old=False,
+        **_):
     
     code, path_source=resolve_path(path_source)
     if not code.startswith("ok"):

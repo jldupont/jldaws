@@ -31,8 +31,8 @@ def run(queue_name=None,
         trigger_none_msg=None, trigger_topic=None,
         delete_on_error=False, dont_pass_through=False,
         simulate_error=False, error_msg=None,
-        log_network_error=False,
-        loglevel=None ):
+        log_network_error=False
+        ,**_):
     
     if write_delay>900 or write_delay<1:
         raise Exception("Invalid value for 'delay_seconds': must be between 1 and 900")

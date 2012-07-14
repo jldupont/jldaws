@@ -28,7 +28,8 @@ def run(queue_name=None, flush_queue=None,
         retry_always=None, wait_trigger=None,
         trigger_none_msg=None, trigger_topic=None,
         delete_on_error=False, dont_pass_through=False,
-        simulate_error=False, error_msg=None ):
+        simulate_error=False, error_msg=None
+        ,**_ ):
     
     ## we need a minimum of second between polls
     polling_interval=max(1, polling_interval)
@@ -129,7 +130,7 @@ def run(queue_name=None, flush_queue=None,
         if msgs is None or len(msgs)==0:
             if wait_trigger or trigger_topic is not None:
                 if trigger_none_msg is not None:
-                    stdout(trigger_none_msg+"\n")
+                    stdout(trigger_none_msg)
                     continue
             
         ### normal flow
@@ -140,9 +141,9 @@ def run(queue_name=None, flush_queue=None,
                     b=msg.get_body()
                                         
                     if format_any:
-                        stdout(b+"\n")
+                        stdout(b)
                     else:
-                        stdout(json.dumps(b)+"\n")
+                        stdout(json.dumps(b))
                         
                     q.delete_message(msg)
                 except Exception, e:

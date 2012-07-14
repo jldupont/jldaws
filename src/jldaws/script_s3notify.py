@@ -4,7 +4,6 @@
 """
 import sys, os
 import logging
-import copy
 from time import sleep
 
 from tools_logging import info_dump

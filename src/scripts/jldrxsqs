@@ -5,7 +5,7 @@
 
     @author: Jean-Lou Dupont
 """
-__version__="0.3"
+__version__="0.4"
 import os, sys, argparse
 op=os.path
 
@@ -22,7 +22,7 @@ except:
 
 DESC="""Receive JSON object from an SQS queue - v%s
 
-The option '-em' can be used with a python 'format string' \%s to retrieve exception message. If this option is used, network errors won't cause the program to raise exceptions.
+The option '-em' can be used with a python 'format string' to retrieve exception message. If this option is used, network errors won't cause the program to raise exceptions.
 """ % __version__
 DEFS={
           "batch_size": 10
@@ -51,14 +51,10 @@ def main():
         parser.add_argument('-se',   dest="simulate_error", action="store_true", help="Simulate a network error accessing SQS", default=False)
         parser.add_argument('-em',   dest="error_msg",    type=str,            help="String to send on stdout when a receive error is detected", default=None)
         
-        args=parser.parse_args()
-        
-        from jldaws.tools_sys import dnorm
-        from jldaws.tools_logging import info_dump
         from jldaws.script_rxsqs import run
-        
-        info_dump(vars(args), 20)
-        run(**dnorm(vars(args)))
+        from jldaws.tools_sys import process_command_line
+        args=process_command_line(parser)
+        run(**args)
 
     except KeyboardInterrupt:
         logging.info("..Exiting")

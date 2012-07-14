@@ -25,7 +25,8 @@ def handlerSigTerm(*p, **k):
 
 def run(dst_path=None, topic_name=None, queue_name=None, mod_sub=None, mod_pub=None, 
         polling_interval=None, force=False, node_id=None, force_delete=False, delete_queue=None,
-        proto_n=None, proto_m=None):
+        proto_n=None, proto_m=None
+        ,**_):
 
     signal.signal(signal.SIGTERM, handlerSigTerm)
 

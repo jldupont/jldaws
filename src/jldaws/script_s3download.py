@@ -27,7 +27,8 @@ def log(msg, path):
 def run(bucket_name=None, prefix=None,
         path_dest=None, path_check=None,
         dont_dl=None, just_keys=None,
-        num_files=5, propagate_error=False,  polling_interval=None):
+        num_files=5, propagate_error=False,  polling_interval=None
+        ,**_):
     
     if path_check is not None:
         code, path_check=resolve_path(path_check)
