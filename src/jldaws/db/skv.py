@@ -90,16 +90,16 @@ class SimpleKV():
         @raise SDB_Access: 
         """
         stm="SELECT * from %s where category='%s' and creation_date is not null order by creation_date DESC limit %s" % (self.dname, category, limit)
-        try:
-            rs=self.sdb.select(stm, max_items=limit, consistent_read=consistent_read, next_token=next_token)
-        except:
-            raise SDB_Access()
+        rs=self.sdb.select(stm, max_items=limit, consistent_read=consistent_read, next_token=next_token)
         
-        if last:
+        if last and rs is not None:
             try:    return rs.next()
             except: return None
         
-        return rs
+        if rs is not None:
+            return (rs, rs.next_token)
+        
+        return (None, None)
 
     def delete_item(self, item, silent=True):
         try:

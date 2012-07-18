@@ -56,12 +56,38 @@ def run(domain_name=None,
             try:
                 topic=jo["topic"]
             except:
-                logging.warning("No 'topic' field found")
+                logging.warning("No 'topic' field found: %s" % line)
                 continue
             
             if topic!=trigger_topic:
-                logging.debug("Not specified topic: %s" % topic)
+                logging.debug("No specified topic: %s" % topic)
                 continue
+            
+        entries=[]
+        next_token=None
+        while True:
+            try:
+                logging.debug("Getting batch...")
+                batch, next_token=db.get_by_category(category=category_name, next_token=next_token)
+            except TypeError:
+                ### no entries
+                ### boto isn't too friendly here...
+                logging.debug("No entries...")
+                break
+            except Exception, e:
+                logging.warning(e.error_message)
+                break
+            
+            if batch is None:
+                break            
+            entries.append(batch)
+            
+            if next_token is None:
+                break
+            
+        for entry in entries:
+            print entry
+                
             
             
         
