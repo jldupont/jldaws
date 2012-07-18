@@ -14,6 +14,10 @@ Current work items
 History
 =======
 
+0.4.0: introduced the "CMDNAME" environment variable for logging
+       added support for syslog
+       added progress report INFO log entries to jlds3upload
+
 0.3.2: added trigger feature to jlds3list
 
 0.3.1: added '-jbn' to jlds3list

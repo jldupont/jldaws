@@ -26,6 +26,7 @@ def report(ctx, ctx2):
 def run(enable_simulate=False, bucket_name=None, 
         path_source=None, path_moveto=None, path_check=None,
         num_files=5, enable_delete=False, propagate_error=False, prefix=None, polling_interval=None
+        ,only_ext=None
         ,**_):
     
     #if args.enable_debug:
@@ -110,7 +111,7 @@ def run(enable_simulate=False, bucket_name=None,
                         
         if path_check is None or path_exists:
             try: 
-                gen=gen_walk(p_src, max_files=num_files)
+                gen=gen_walk(p_src, max_files=num_files,only_ext=only_ext)
                 for src_filename in gen:
                     
                     logging.info("Processing file: %s" % src_filename)                
@@ -165,6 +166,7 @@ def process_file(bucket_name, prefix, k, src_filename, p_dst, enable_delete, pro
     try:
         k.set_contents_from_filename(src_filename)
         report(ctx, {"code":"ok", "kind":"upload"})
+        logging.info("progress: uploaded file %s" % src_filename)
     except:
         if propagate_error:
             report(ctx, {"code":"error", "kind":"upload"})
@@ -177,6 +179,8 @@ def process_file(bucket_name, prefix, k, src_filename, p_dst, enable_delete, pro
             logging.debug("Error deleting: %s (%s)" % (src_filename, msg))
             if not propagate_error:
                 return
+        else:
+            logging.info("progress: deleted file %s" % src_filename)
 
         report(ctx, {"code": code, "kind":"delete"})
             
@@ -191,6 +195,8 @@ def process_file(bucket_name, prefix, k, src_filename, p_dst, enable_delete, pro
             logging.debug("Error moving: %s ==> %s  (%s)" % (src_filename, dst_filename, msg))
             if not propagate_error:
                 return
+        else:
+            logging.info("progress: moved file %s ==> %s" % (src_filename, dst_filename))
 
         report(ctx, {"code":code, "kind":"move", "dst":dst_filename})
     

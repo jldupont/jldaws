@@ -144,7 +144,7 @@ def process(ctx):
     potential_todo=filter(remove_exists, results_exists)
 
     def keep_only_keys(entry):
-        _, (key, state)=entry
+        _, (key, _state)=entry
         return key
     
     potential_todo_keys=map(keep_only_keys, potential_todo)

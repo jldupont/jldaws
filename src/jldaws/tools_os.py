@@ -181,12 +181,15 @@ def remove_common_prefix(common_prefix, path):
         return ("error", path)
 
 
-def gen_walk(path, max_files=None):
+def gen_walk(path, max_files=None, only_ext=None):
     count=0
     done=False
     for root, _dirs, files in os.walk(path):
         
         for f in files:
+            if only_ext is not None:
+                if not f.endswith(only_ext):
+                    continue
             yield os.path.join(root, f)
         
             count=count+1
