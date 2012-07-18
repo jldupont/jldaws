@@ -1,0 +1,55 @@
+#!/usr/bin/env python
+"""
+    SDB KV get
+
+    @author: Jean-Lou Dupont
+"""
+__version__="0.1"
+import os, sys, argparse
+op=os.path
+
+try:
+    import jldaws #@UnusedImport
+except:
+    ### must be in dev mode then    
+    this_dir=op.dirname(__file__)
+    lib_path=op.abspath(op.join(this_dir, ".."))
+    sys.path.insert(0, lib_path)
+    import jldaws #@UnusedImport
+
+########################################################################
+
+DESC="""SDB Get KV entries in a category space - version %s
+
+Waits for a trigger on STDIN, retrieves all KV entries under a specified "category" space, outputs on STDOUT in JSON format.
+Trigger on topic using the format {"topic":"some_topic"...}
+""" % __version__
+DEFAULTS={
+          }
+
+def main():
+    try:
+        import jldaws.do_setup  #@UnusedImport
+        import logging
+        import jldaws.do_checks #@UnusedImport
+        
+        parser=argparse.ArgumentParser(description=DESC, fromfile_prefix_chars='@', formatter_class=argparse.RawTextHelpFormatter)
+        
+        parser.add_argument('-dn',  dest='domain_name',    type=str, help="Domain name",   required=True)
+        parser.add_argument('-cn',  dest='category_name',  type=str, help="Category name",   required=True)
+        parser.add_argument('-trt', dest='trigger_topic',  type=str, help="Trigger topic (JSON mode only)",   default=None)
+                
+        from jldaws.script_sdbget import run
+        from jldaws.tools_sys import process_command_line
+        args=process_command_line(parser)
+        run(**args)
+
+    except KeyboardInterrupt:
+        logging.info("..Exiting")
+        sys.exit(0)##no probs
+        
+    except Exception,e:
+        logging.error(str(e))
+        sys.exit(1)
+        
+sys.exit(main())

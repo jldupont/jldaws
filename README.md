@@ -14,6 +14,8 @@ Current work items
 History
 =======
 
+0.4.1: added "jldsdb" and "jldsdbget" scripts
+
 0.4.0: introduced the "CMDNAME" environment variable for logging
        added support for syslog
        added progress report INFO log entries to jlds3upload

@@ -81,7 +81,7 @@ class SimpleKV():
 
         return rs
         
-    def get_by_category(self, category, limit=20, consistent_read=False, last=True):
+    def get_by_category(self, category, limit=20, consistent_read=False, last=True, next_token=None):
         """
         Get a batch of items from a given category
         
@@ -91,7 +91,7 @@ class SimpleKV():
         """
         stm="SELECT * from %s where category='%s' and creation_date is not null order by creation_date DESC limit %s" % (self.dname, category, limit)
         try:
-            rs=self.sdb.select(stm, max_items=limit, consistent_read=consistent_read)
+            rs=self.sdb.select(stm, max_items=limit, consistent_read=consistent_read, next_token=next_token)
         except:
             raise SDB_Access()
         
