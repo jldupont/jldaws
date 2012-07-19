@@ -26,6 +26,9 @@ This package contains a collection of Amazon Web Service related scripts e.g.
 * jldleader: distributed leader election protocol manager
 * jlds3up  : simple file upload to s3 with functionality to delete 'old' files
 * jlds3list : listing files in an S3 bucket
+* jldsdb: list, create and delete operations on SDB
+* jldsdbget: retrieve entries in SDB
+* jldsdbinsert: insert records in SDB
 
 The philosophy behind these scripts is:
 

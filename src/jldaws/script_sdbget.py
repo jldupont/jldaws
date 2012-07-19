@@ -10,6 +10,9 @@ from jldaws.db.skv import SimpleKV
 def run(domain_name=None, 
         category_name=None,
         trigger_topic=None 
+        ,just_key=False
+        ,just_key_value=False
+        ,disable_pass_through=False
         ,**_
         ):
 
@@ -39,8 +42,10 @@ def run(domain_name=None,
 
         try:
             line=sys.stdin.readline().strip()
+            if not disable_pass_through:
+                sys.stdout.write(line+"\n")            
         except:
-            raise Exception("broken stdin...")
+            raise Exception("broken stdin/stdout...")
             
         
         if trigger_topic is not None:
@@ -69,24 +74,33 @@ def run(domain_name=None,
             try:
                 logging.debug("Getting batch...")
                 batch, next_token=db.get_by_category(category=category_name, next_token=next_token)
-            except TypeError:
-                ### no entries
-                ### boto isn't too friendly here...
-                logging.debug("No entries...")
-                break
             except Exception, e:
-                logging.warning(e.error_message)
+                logging.warning(e)
+                batch=None
                 break
             
             if batch is None:
-                break            
+                break     
+                   
             entries.append(batch)
             
             if next_token is None:
                 break
             
         for entry in entries:
-            print entry
+            
+            if just_key:
+                try:    print entry["key"]
+                except:
+                    logging.debug("Entry without a 'key' field...")
+                    
+            if just_key_value:
+                try:    print "%s\t%s" % (entry["key"], entry["value"])
+                except:
+                    logging.debug("Entry without a 'key'/'value' field(s)...")
+             
+            if not just_key and not just_key_value:       
+                print entry
                 
             
             

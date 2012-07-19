@@ -93,8 +93,8 @@ class SimpleKV():
         rs=self.sdb.select(stm, max_items=limit, consistent_read=consistent_read, next_token=next_token)
         
         if last and rs is not None:
-            try:    return rs.next()
-            except: return None
+            try:    return (rs.next(), rs.next_token)
+            except: return (None, None)
         
         if rs is not None:
             return (rs, rs.next_token)
@@ -186,16 +186,16 @@ class SimpleKV():
                 raise SDB_Access()
 
             
-    def insert(self, key, value, attrs=None, category=None, id=None, days=0, hours=0, minutes=0):
+    def insert(self, key, value, attrs=None, category=None, _id=None, days=0, hours=0, minutes=0):
         """
         Inserts a [category:key:value] with an optional expiry_date
         
         @return (id, creation iso time, expiration iso time)        
         """
-        id=id or uuid.uuid1()
+        _id=_id or uuid.uuid1()
 
         try:     
-            item = self.sdb.new_item(id)
+            item = self.sdb.new_item(_id)
         except:  
             raise SDB_CreateItem("Can't create SDB key(%s) in '%s' domain" % (key, self.dname))
         
@@ -218,7 +218,7 @@ class SimpleKV():
         except Exception,e: 
             raise SDB_Access("Can't save item with SDB key(%s) in domain(%s): %s" % (key, self.dname, e))
         
-        return (str(id), now, then)
+        return (str(_id), now, then)
 
     def get_batch_by_value(self, value, category=None, limit=1000, consistent_read=False):
         """

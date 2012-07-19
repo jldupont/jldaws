@@ -1,6 +1,6 @@
 Metadata-Version: 1.0
 Name: jldaws
-Version: 0.4.0
+Version: 0.4.1
 Summary: Collection of Amazon AWS related scripts
 Home-page: http://www.systemical.com/doc/opensource/jldaws
 Author: Jean-Lou Dupont
@@ -20,6 +20,9 @@ Description:
         * jldleader: distributed leader election protocol manager
         * jlds3up  : simple file upload to s3 with functionality to delete 'old' files
         * jlds3list : listing files in an S3 bucket
+        * jldsdb: list, create and delete operations on SDB
+        * jldsdbget: retrieve entries in SDB
+        * jldsdbinsert: insert records in SDB
         
         The philosophy behind these scripts is:
         
