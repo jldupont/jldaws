@@ -4,11 +4,13 @@
 
     @author: Jean-Lou Dupont
 """
-__version__="0.2"
+__version__="0.3"
 import os, sys, argparse
 op=os.path
 
 try:
+    if os.environ.get("DEVMODE", False):
+        raise
     import jldaws #@UnusedImport
 except:
     ### must be in dev mode then    
@@ -19,7 +21,14 @@ except:
 
 ########################################################################
 
-DESC="Upload local files to S3 - %s" % __version__
+DESC="""Upload local files to S3 - %s
+
+-ifnr:  input filename regex (optional):  specification of a python regex for capturing input filename components
+-okf:   output S3 key format string (optional)
+
+E.g.  -ifnr '(.*)_(.*).xml'  -okf '%s-%s.xml'
+
+""" % (__version__, "%s", "%s")
 DEFAULTS={
           "polling_interval": 60
           ,"prefix": ""
@@ -45,7 +54,10 @@ def main():
         parser.add_argument('-e',  dest="propagate_error", help="Propagate S3 access errors", action="store_true", default=False)        
         parser.add_argument('-r',  dest="prefix", help="Prefix", type=str, action="store", default=DEFAULTS["prefix"])
 
-        parser.add_argument('-p',  dest="polling_interval", type=int, action="store", help="Polling interval (seconds)", default=DEFAULTS["polling_interval"])        
+        parser.add_argument('-p',  dest="polling_interval", type=int, action="store", help="Polling interval (seconds)", default=DEFAULTS["polling_interval"])
+        
+        parser.add_argument('-ifnr', dest="filename_input_regex",   type=str, help="Input filename regex", default=None)
+        parser.add_argument('-okf', dest="key_output_format", type=str, help="Output S3 key format", default=None)
         
         from jldaws.script_s3upload import run
         from jldaws.tools_sys import process_command_line

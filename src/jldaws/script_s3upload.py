@@ -2,7 +2,7 @@
     Created on 2012-01-20
     @author: jldupont
 """
-import os, sys, logging
+import os, sys, logging, re
 from time import sleep
 
 from tools_logging import pprint_kv
@@ -27,7 +27,28 @@ def run(enable_simulate=False, bucket_name=None,
         path_source=None, path_moveto=None, path_check=None,
         num_files=5, enable_delete=False, propagate_error=False, prefix=None, polling_interval=None
         ,only_ext=None
+        ,filename_input_regex=None
+        ,key_output_format=None
         ,**_):
+    
+    if key_output_format is not None:
+        if filename_input_regex is None:
+            raise Exception("-ifnr and -okf options work in tandem")
+    
+    if filename_input_regex is not None:
+        logging.info("Compiling input filename regex...")
+        try:
+            ireg=re.compile(filename_input_regex)
+            ofmt=key_output_format
+        except:
+            raise Exception("Can't compile input filename regex pattern")
+        
+        if key_output_format is None:
+            raise Exception("Input filename regex specified but no output S3 key format specified")
+    else:
+        ireg=None
+        ofmt=None
+    
     
     #if args.enable_debug:
     #    logger=logging.getLogger()
@@ -76,22 +97,24 @@ def run(enable_simulate=False, bucket_name=None,
             raise Exception("Can't create 'moveto' directory: %s" % p_dst)
         logging.info("* Created moveto directory")
     
-    try:
-        conn = boto.connect_s3()
-    except:
-        ## not much we can do
-        ## but actually no remote calls are made
-        ## at this point so it should be highly improbable
-        raise Exception("Can't 'connect' to S3")
+    if not enable_simulate:
+        try:
+            conn = boto.connect_s3()
+        except:
+            ## not much we can do
+            ## but actually no remote calls are made
+            ## at this point so it should be highly improbable
+            raise Exception("Can't 'connect' to S3")
     
-    ###################### BUCKET
-    logging.info("Getting/creating bucket (unlimited retries with backoff)")
-    def _get_create_bucket():
-        return conn.create_bucket(bucket_name)
-              
-    bucket=retry(_get_create_bucket)
-    logging.info("Got bucket")
-    #############################
+    if not enable_simulate:
+        ###################### BUCKET
+        logging.info("Getting/creating bucket (unlimited retries with backoff)")
+        def _get_create_bucket():
+            return conn.create_bucket(bucket_name)
+                  
+        bucket=retry(_get_create_bucket)
+        logging.info("Got bucket")
+        #############################
 
     if enable_simulate:
         logging.info("Begin simulation...")
@@ -100,7 +123,7 @@ def run(enable_simulate=False, bucket_name=None,
 
     ppid=os.getppid()
     logging.info("Process pid: %s" % os.getpid())
-    logging.info("Parent pid: %s" % ppid)
+    logging.info("Parent pid:  %s" % ppid)
     while True:
         if os.getppid()!=ppid:
             logging.warning("Parent terminated... exiting")
@@ -114,8 +137,11 @@ def run(enable_simulate=False, bucket_name=None,
                 gen=gen_walk(p_src, max_files=num_files,only_ext=only_ext)
                 for src_filename in gen:
                     
-                    logging.info("Processing file: %s" % src_filename)                
-                    s3key_name=gen_s3_key(p_src, src_filename, prefix)
+                    logging.info("Processing file: %s" % src_filename)
+                    try:          
+                        s3key_name=gen_s3_key(ireg, ofmt, p_src, src_filename, prefix)
+                    except:
+                        raise Exception("Error generating S3 key... check your command line parameters... use the 'simulate' facility")
                     
                     if enable_simulate:
                         simulate(src_filename, s3key_name, enable_delete, p_dst)
@@ -135,9 +161,17 @@ def run(enable_simulate=False, bucket_name=None,
         sleep(polling_interval)
     
 
-def gen_s3_key(p_src, filename, prefix):
+def gen_s3_key(ireg, ofmt, p_src, filename, prefix):
     _, fn=remove_common_prefix(p_src, filename)
-    return "/%s%s" % (prefix, fn)
+    
+    ### use the input regex and output format string
+    ### to generate S3 key
+    g=ireg.match(fn).groups()
+    fn=ofmt % g
+    
+    s="/%s%s" % (prefix, fn)
+    return s.replace("//","")
+    
     
     
 def simulate(fil, s3key_name, enable_delete, p_dst):
@@ -145,17 +179,18 @@ def simulate(fil, s3key_name, enable_delete, p_dst):
     pprint_kv(" Filename used on s3", s3key_name)
     
     if enable_delete:
-        _c, f_is_writable=can_write(fil)        
+        _c, f_is_writable=can_write(fil)      
         pprint_kv(" File would be deleted", fil)
         if not f_is_writable:
             pprint_kv(" ! File can't be deleted", fil)
     else:
-        bname=os.path.basename(fil)
-        fdst=os.path.join(p_dst, bname)           
-        _c, d_is_writable=can_write(p_dst)            
-        pprint_kv(" File would be moved to", fdst)
-        if not d_is_writable:
-            pprint_kv(" ! File can't be moved to", p_dst)
+        if p_dst is not None:
+            bname=os.path.basename(fil)
+            fdst=os.path.join(p_dst, bname)        
+            _c, d_is_writable=can_write(p_dst)
+            pprint_kv(" File would be moved to", fdst)
+            if not d_is_writable:
+                pprint_kv(" ! File can't be moved to", p_dst)
 
 
 def process_file(bucket_name, prefix, k, src_filename, p_dst, enable_delete, propagate_error):

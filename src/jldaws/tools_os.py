@@ -187,6 +187,8 @@ def gen_walk(path, max_files=None, only_ext=None):
     for root, _dirs, files in os.walk(path):
         
         for f in files:
+            if f is None:
+                continue
             if only_ext is not None:
                 if not f.endswith(only_ext):
                     continue

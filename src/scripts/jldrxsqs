@@ -10,13 +10,15 @@ import os, sys, argparse
 op=os.path
 
 try:
-    import jldaws
+    if os.environ.get("DEVMODE", False):
+        raise    
+    import jldaws #@UnusedImport
 except:
     ### must be in dev mode then    
     this_dir=op.dirname(__file__)
     lib_path=op.abspath(op.join(this_dir, ".."))
     sys.path.insert(0, lib_path)
-    import jldaws
+    import jldaws #@UnusedImport
 
 ########################################################################
 
@@ -31,9 +33,9 @@ DEFS={
 
 def main():
     try:
-        import jldaws.do_setup
+        import jldaws.do_setup  #@UnusedImport
         import logging
-        import jldaws.do_checks
+        import jldaws.do_checks #@UnusedImport
         
         parser=argparse.ArgumentParser(description=DESC, fromfile_prefix_chars='@', formatter_class=argparse.RawTextHelpFormatter)
         parser.add_argument('-e',    dest="propagate_error",  action="store_true", help="Propagate SQS error", default=False)        

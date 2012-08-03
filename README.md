@@ -14,6 +14,8 @@ Current work items
 History
 =======
 
+0.4.2: added regex & format options to jlds3upload
+
 0.4.1: added "jldsdb", "jldsdbget" and "jldsdbinsert" scripts
 
 0.4.0: introduced the "CMDNAME" environment variable for logging

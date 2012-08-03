@@ -11,6 +11,8 @@ import os, sys, argparse
 op=os.path
 
 try:
+    if os.environ.get("DEVMODE", False):
+        raise        
     import jldaws #@UnusedImport
 except:
     ### must be in dev mode then    
