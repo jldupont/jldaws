@@ -38,8 +38,8 @@ def run(enable_simulate=False, bucket_name=None,
     if filename_input_regex is not None:
         logging.info("Compiling input filename regex...")
         try:
-            ireg=re.compile(filename_input_regex)
-            ofmt=key_output_format
+            ireg=re.compile(filename_input_regex.strip("'"))
+            ofmt=key_output_format.strip("'")
         except:
             raise Exception("Can't compile input filename regex pattern")
         
