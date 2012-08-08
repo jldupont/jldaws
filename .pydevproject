@@ -10,5 +10,7 @@
 
 <pydev_pathproperty name="org.python.pydev.PROJECT_EXTERNAL_SOURCE_PATH">
 <path>/usr/local/lib/python2.7/dist-packages</path>
+<path>/home/jldupont/python/lib/python2.7/site-packages</path>
+<path>/home/jldupont/python/lib/python2.7/site-packages/pyfnc</path>
 </pydev_pathproperty>
 </pydev_project>

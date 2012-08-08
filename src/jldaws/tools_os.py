@@ -5,6 +5,45 @@
 import os, errno,re
 import subprocess
 
+
+def filter_files(target_ext, files):
+    if target_ext is None:
+        return files
+        
+    def inf(path):
+        _root, ext=os.path.splitext(path)
+        return ext.strip(".")==target_ext
+    
+    return filter(inf, files)
+
+
+def get_root_files(src_path, strip_dirname=False, only_ext=None):
+    """
+    Retrieve files from the root of src_path
+    >> get_root_files("/tmp")
+    
+    >> get_root_files("/tmp", strip_dirname=True)
+    
+    """
+    def add_src_path(p):
+        return os.path.join(src_path, p)
+    
+    
+    try:
+        liste=os.listdir(src_path)
+        liste=map(add_src_path, liste)        
+        liste=filter(os.path.isfile, liste)
+        
+        if strip_dirname:
+            liste=map(os.path.basename, liste)
+
+        liste=filter_files(only_ext, liste)
+                 
+        return ("ok", liste)
+    except:
+        return ("error", None)
+
+
 RE_EXT=re.compile(r'^(.*?)\-(.*?)\.([a-zA-Z]+|[a-zA-Z]+\.[a-zA-Z]+)$')
 
 def split_path_version(path):

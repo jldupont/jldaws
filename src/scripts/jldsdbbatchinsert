@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """
-    SDB KV insert
+    SDB KV batch insert
 
     @author: Jean-Lou Dupont
 """
@@ -21,17 +21,12 @@ except:
 
 ########################################################################
 
-DESC="""SDB Insert KV entry in a category space - version %s
+DESC="""SDB Batch Insert KV entry in a category space - version %s
 
-Waits for an input on STDIN, writes to SDB in specified category space. 
+Waits availability of source JSON files, writes to SDB in specified category space. 
 
 Input type is auto-detected. Default input type is JSON with the following format:
 {"category": $category, "key":$key, "value":$value} where the 'category' and 'value' fields are optional. If the 'category' isn't specified in the input JSON, then the one specified with '-cn' is assumed or "". If the value field is not present, then the default value is assumed. 
-
-Text based format is also supported, tab separated fields:
-$category<tab>$key<tab>$value
-$key<tab>$value
-$key
 """ % __version__
 DEFAULTS={
           }
@@ -44,11 +39,18 @@ def main():
         
         parser=argparse.ArgumentParser(description=DESC, fromfile_prefix_chars='@', formatter_class=argparse.RawTextHelpFormatter)
         
-        parser.add_argument('-dn',  dest='domain_name',    type=str, help="Domain name",   required=True)
-        parser.add_argument('-cn',  dest='category_name',  type=str, help="Category name",   default="")
-        parser.add_argument('-dv',  dest='default_value',  type=str, help="Default value",   default="1")
+        parser.add_argument('-sp',  dest='src_path',       type=str, help="Source path",        required=True)        
+        parser.add_argument('-p',   dest='polling',        type=int, help="Polling interval",   default=60)
+        parser.add_argument('-rc',  dest='reset_count',    type=int, help="Reset count (n*polling)",   default=60)
+        
+        parser.add_argument('-bs',  dest='batch_size',     type=int, help="Batch size per interval",   default=1)
+        parser.add_argument('-ext', dest='src_ext',        type=str, help="Source file extension e.g. json",  default=None)
+        
+        parser.add_argument('-dn',  dest='domain_name',    type=str, help="Domain name",        required=True)
+        parser.add_argument('-cn',  dest='category_name',  type=str, help="Category name",      default="")
+        parser.add_argument('-dv',  dest='default_value',  type=str, help="Default value",      default="1")
                 
-        from jldaws.script_sdbinsert import run
+        from jldaws.script_sdbbatchinsert import run
         from jldaws.tools_sys import process_command_line
         args=process_command_line(parser)
         run(**args)

@@ -40,17 +40,36 @@ def setloglevel(level_name):
 class FilterDuplicates(logging.Filter):
     """
     Everything before the ':' marker is considered to be the "signature" for a log event
+    
+    - All DEBUG level log go through
+    - All "progress" report go through
+    - All messages with a ":" separator (for contextual info) are passed
+    - Other messages are filtered for duplicates 
     """
     occured=[]
     
     def filter(self, record):
+        if record.levelname=="DEBUG":
+            return 1
+        
+        msg=record.getMessage()
+        
+        if msg.startswith("progress") or msg.startswith("Progress") or msg.startswith("PROGRESS"):
+            return 1
+        
         try:
-            bits=record.getMessage().split(":")
-            signature_hash=hashlib.md5(bits[0]).hexdigest()
+            bits=msg.split(":")
+            if len(bits)>1:
+                return 1
+            
+            signature_hash=hashlib.md5(msg).hexdigest()
             if signature_hash in self.occured:
                 return 0
+            
             self.occured.append(signature_hash)
-        except:
+            record.msg="*"+msg
+        except Exception,e:
+            print e
             ### let it pass...
             pass
         

@@ -6,7 +6,7 @@
     @author: jldupont
 """
 __author__  ="Jean-Lou Dupont"
-__version__ ="0.4.3"
+__version__ ="0.4.4"
 
 
 from distutils.core import setup
@@ -29,6 +29,7 @@ This package contains a collection of Amazon Web Service related scripts e.g.
 * jldsdb: list, create and delete operations on SDB
 * jldsdbget: retrieve entries in SDB
 * jldsdbinsert: insert records in SDB
+* jldsdbbatchinsert: batch insert records in SDB from file
 
 The philosophy behind these scripts is:
 
