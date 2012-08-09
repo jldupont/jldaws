@@ -107,10 +107,13 @@ def process1(db, batch_size, category_name, default_value):
 @coroutine
 def process2(db, category_name, default_value):
     
+    stage3=process3()
+    
     while True:
         _file, contents=(yield)
         logging.info("Progress> processing file: %s" % _file)
-        
+    
+        inserted=False    
         try:
             ino=json.loads(contents)
             ino["category"]=ino.get("category", category_name)
@@ -119,10 +122,12 @@ def process2(db, category_name, default_value):
                 logging.warning("Missing 'key' field in file: %s" % _file)
             else:
                 logging.debug("Input JSON: %s" % ino)
-                do_insert(db, ino["category"], ino["key"], ino["value"])
+                inserted=do_insert(db, ino["category"], ino["key"], ino["value"])
         except:
             logging.warning("Error processing file: %s" % _file)
 
+        if inserted:
+            stage3.send(_file)
         
     
                 
@@ -131,15 +136,29 @@ def do_insert(db, category, key, value):
     try:
         db.insert(key, value, category=category)
         logging.info("Progress: inserted 1 record")
+        return True
     except:
         try:
             ### don't give up too easily
             sleep(1)
             db.insert(key, value, category=category)
             logging.info("Progress: inserted 1 record (after 2nd try)")
+            return True
         except Exception,e:
             logging.debug(e)
             logging.warning("Can't insert in SDB...")
+            
+    return False
           
+@coroutine
+def process3():
+    """
+    Delete source file once processed
+    """
+    while True:
         
+        _file_to_delete=(yield)
+        rm(_file_to_delete)
+        
+
     
