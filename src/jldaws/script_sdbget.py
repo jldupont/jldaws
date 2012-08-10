@@ -73,7 +73,7 @@ def run(domain_name=None,
         while True:
             try:
                 logging.debug("Getting batch...")
-                batch, next_token=db.get_by_category(category=category_name, next_token=next_token)
+                batch, next_token=db.get_by_category(category=category_name, next_token=next_token, last=False)
             except Exception, e:
                 logging.warning(e)
                 batch=None
@@ -87,20 +87,21 @@ def run(domain_name=None,
             if next_token is None:
                 break
             
-        for entry in entries:
-            
-            if just_key:
-                try:    print entry["key"]
-                except:
-                    logging.debug("Entry without a 'key' field...")
-                    
-            if just_key_value:
-                try:    print "%s\t%s" % (entry["key"], entry["value"])
-                except:
-                    logging.debug("Entry without a 'key'/'value' field(s)...")
-             
-            if not just_key and not just_key_value:       
-                print entry
+        for resultset in entries:
+            for entry in resultset:
+                
+                if just_key:
+                    try:    print entry["key"]
+                    except:
+                        logging.debug("Entry without a 'key' field...")
+                        
+                if just_key_value:
+                    try:    print "%s\t%s" % (entry["key"], entry["value"])
+                    except:
+                        logging.debug("Entry without a 'key'/'value' field(s)...")
+                 
+                if not just_key and not just_key_value:       
+                    print entry
                 
             
             
