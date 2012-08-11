@@ -46,6 +46,29 @@ def utc_iso_now():
     r=time.strftime(fmt, now)
     return (now, r)
 
+def iso_compare_string(a,b):
+    """
+    >>> a="2012-01-25T08:58:27.514373"
+    >>> b="2013-01-25T08:58:27.514373"
+    >>> iso_compare_string(a,b)
+    ('ok', 'older')
+    >>> iso_compare_string(b,a)
+    ('ok', 'newer')
+    """
+    try:    aiso=iso_from_string(a)
+    except:
+        return ("error", "'a' string not ISO format")
+    try:    biso=iso_from_string(b)
+    except:
+        return ("error", "'b' string not ISO format")
+    
+    if aiso>biso:
+        return ("ok", "newer")
+    if aiso<biso:
+        return ("ok", "older")
+    
+    return ("ok", "equal")
+
 def iso_from_string(inp):
     """
     need to remove the trailing miliseconds
@@ -64,9 +87,9 @@ def iso_string_add_delta(inp, days=0, hours=0, minutes=0):
     >>> now, nowstr=utc_iso_now()
     >>> t, tstr=iso_string_add_delta(nowstr, days=1, hours=12)
     >>> print t.day-now.tm_mday
-    1
+    2
     >>> print t.hour-now.tm_hour
-    12
+    -12
     """
     dt=iso_from_string(inp)
     td=timedelta(days=days, hours=hours, minutes=minutes)

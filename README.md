@@ -14,6 +14,8 @@ Current work items
 History
 =======
 
+0.4.7: enhancements to 'jldsdbget'
+
 0.4.6: fixed bug in 'jldsdbget'
 
 0.4.4: added 'jldsdbbatchinsert', enhanced logging across all scripts

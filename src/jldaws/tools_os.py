@@ -2,8 +2,41 @@
     Created on 2012-01-19
     @author: jldupont
 """
-import os, errno,re
+import os, errno,re, tempfile
 import subprocess
+
+
+def atomic_write(path, contents, tmppath=None):
+    """
+    Atomic write to file
+    
+    Create temporary file and then move/rename to specified path.
+    Rename operation in the same filesystem are atomic (at least in Linux).
+    
+    >>> atomic_write("/tmp/_jlddk_atomic_write", "test!") ## doctest: +ELLIPSIS
+    ('ok', ...
+    """
+    
+    dn=tmppath or os.path.dirname(path)
+    fd, tfn=tempfile.mkstemp(dir=dn)
+    
+    try:
+        ### part 1: write to temp file
+        f=os.fdopen(fd, "w")
+        f.write(contents)
+        f.close()
+    except Exception, e:
+        try:    os.close(fd)
+        except: pass
+        return ("error", "write to temp file: %s" % str(e))        
+        
+    try:
+        ### part 2: rename to specified path
+        os.rename(tfn, path)
+    except Exception,e:
+        return ("error", "rename to path '%s': %s" % (path, e))
+        
+    return ("ok", tfn)
 
 
 def filter_files(target_ext, files):

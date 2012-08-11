@@ -25,6 +25,8 @@ DESC="""SDB Get KV entries in a category space - version %s
 
 Waits for a trigger on STDIN, retrieves all KV entries under a specified "category" space, outputs on STDOUT in JSON (default) or TEXT format.
 Trigger on topic using the format {"topic":"some_topic"...}
+
+Individual file for each record is also supported.
 """ % __version__
 DEFAULTS={
           }
@@ -41,9 +43,17 @@ def main():
         parser.add_argument('-cn',  dest='category_name',  type=str, help="Category name",   required=True)
         parser.add_argument('-trt', dest='trigger_topic',  type=str, help="Trigger topic (JSON mode only)",   default=None)
         
+        parser.add_argument('-tp',  dest='path_tmp',       type=str, help="Temporary path for file output",     default=None)
+        parser.add_argument('-dp',  dest='path_dst',       type=str, help="Destination path for file output",   default=None)
+        parser.add_argument('-ext', dest='ext',            type=str, help="Extension for output files (default is category)",   default=None)
+        parser.add_argument('-kmr', dest='keep_most_recent', action="store_true", help="Keep only most recent record of a key",   default=False)
+        
+        parser.add_argument('-p',   dest='polling',         type=int, help="Polling interval (seconds) (file mode only)",   default=60)
+        
         parser.add_argument('-dpt', dest='disable_pass_through',  action="store_true", help="Disable stdin->stdout pass-through",   default=False)
         parser.add_argument('-jk',  dest='just_key',       action="store_true", help="List only the keys",   default=False)
         parser.add_argument('-jkv', dest='just_key_value', action="store_true", help="List only the key<tab>value",   default=False)
+        
         
                 
         from jldaws.script_sdbget import run
