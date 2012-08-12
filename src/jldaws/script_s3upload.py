@@ -29,6 +29,7 @@ def run(enable_simulate=False, bucket_name=None,
         ,only_ext=None
         ,filename_input_regex=None
         ,key_output_format=None
+        ,enable_progress_report=False
         ,**_):
     
     if key_output_format is not None:
@@ -137,7 +138,8 @@ def run(enable_simulate=False, bucket_name=None,
                 gen=gen_walk(p_src, max_files=num_files,only_ext=only_ext)
                 for src_filename in gen:
                     
-                    logging.info("Processing file: %s" % src_filename)
+                    if enable_progress_report:
+                        logging.info("Processing file: %s" % src_filename)
                     try:          
                         s3key_name=gen_s3_key(ireg, ofmt, p_src, src_filename, prefix)
                     except Exception,e:
@@ -148,7 +150,7 @@ def run(enable_simulate=False, bucket_name=None,
                     else:
                         k=S3Key(bucket)
                         k.key=s3key_name
-                        process_file(bucket_name, prefix, k, src_filename, p_dst, enable_delete, propagate_error)
+                        process_file(enable_progress_report, bucket_name, prefix, k, src_filename, p_dst, enable_delete, propagate_error)
     
             except Exception, e:
                 logging.error("Error processing files...(%s)" % str(e))
@@ -194,7 +196,7 @@ def simulate(fil, s3key_name, enable_delete, p_dst):
                 pprint_kv(" ! File can't be moved to", p_dst)
 
 
-def process_file(bucket_name, prefix, k, src_filename, p_dst, enable_delete, propagate_error):
+def process_file(enable_progress_report, bucket_name, prefix, k, src_filename, p_dst, enable_delete, propagate_error):
     
     ctx={"src": src_filename, "key": k.name, "bucket": bucket_name, "prefix": prefix}
     
@@ -202,7 +204,9 @@ def process_file(bucket_name, prefix, k, src_filename, p_dst, enable_delete, pro
     try:
         k.set_contents_from_filename(src_filename)
         report(ctx, {"code":"ok", "kind":"upload"})
-        logging.info("progress: uploaded file %s" % src_filename)
+        
+        if enable_progress_report:
+            logging.info("progress: uploaded file %s" % src_filename)
     except:
         if propagate_error:
             report(ctx, {"code":"error", "kind":"upload"})
@@ -216,7 +220,8 @@ def process_file(bucket_name, prefix, k, src_filename, p_dst, enable_delete, pro
             if not propagate_error:
                 return
         else:
-            logging.info("progress: deleted file %s" % src_filename)
+            if enable_progress_report:
+                logging.info("progress: deleted file %s" % src_filename)
 
         report(ctx, {"code": code, "kind":"delete"})
             
@@ -232,7 +237,8 @@ def process_file(bucket_name, prefix, k, src_filename, p_dst, enable_delete, pro
             if not propagate_error:
                 return
         else:
-            logging.info("progress: moved file %s ==> %s" % (src_filename, dst_filename))
+            if enable_progress_report:
+                logging.info("progress: moved file %s ==> %s" % (src_filename, dst_filename))
 
         report(ctx, {"code":code, "kind":"move", "dst":dst_filename})
     
