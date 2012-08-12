@@ -166,8 +166,9 @@ def gen_s3_key(ireg, ofmt, p_src, filename, prefix):
     
     ### use the input regex and output format string
     ### to generate S3 key
-    g=ireg.match(fn).groups()
-    fn=ofmt % g
+    if ireg is not None:
+        g=ireg.match(fn).groups()
+        fn=ofmt % g
     
     s="/%s%s" % (prefix, fn)
     return s.replace("//","")
