@@ -4,7 +4,7 @@
 
     @author: Jean-Lou Dupont
 """
-__version__="0.3"
+__version__="0.4"
 import os, sys, argparse
 op=os.path
 

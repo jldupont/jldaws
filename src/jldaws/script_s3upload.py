@@ -140,8 +140,8 @@ def run(enable_simulate=False, bucket_name=None,
                     logging.info("Processing file: %s" % src_filename)
                     try:          
                         s3key_name=gen_s3_key(ireg, ofmt, p_src, src_filename, prefix)
-                    except:
-                        raise Exception("Error generating S3 key... check your command line parameters... use the 'simulate' facility")
+                    except Exception,e:
+                        raise Exception("Error generating S3 key... check your command line parameters... use the 'simulate' facility: %s" % e)
                     
                     if enable_simulate:
                         simulate(src_filename, s3key_name, enable_delete, p_dst)
