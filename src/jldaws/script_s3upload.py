@@ -64,9 +64,10 @@ def run(enable_simulate=False, bucket_name=None,
     try:    path_moveto=path_moveto.strip()
     except: path_moveto=None
     
-    code, path_check=resolve_path(path_check)
-    if not code.startswith("ok"):
-        logging.warning("path_check '%s' might be in error..." % path_check)
+    if path_check is not None:
+        code, path_check=resolve_path(path_check)
+        if not code.startswith("ok"):
+            logging.warning("path_check '%s' might be in error..." % path_check)
     
     ### VALIDATE PARAMETERS
     if enable_delete and path_moveto is not None:
