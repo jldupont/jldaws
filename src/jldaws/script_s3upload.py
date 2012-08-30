@@ -136,6 +136,7 @@ def run(enable_simulate=False, bucket_name=None,
                         
         if path_check is None or path_exists:
             try: 
+                count=0
                 gen=gen_walk(p_src, max_files=num_files,only_ext=only_ext)
                 for src_filename in gen:
                     
@@ -151,13 +152,17 @@ def run(enable_simulate=False, bucket_name=None,
                     else:
                         k=S3Key(bucket)
                         k.key=s3key_name
-                        process_file(enable_progress_report, bucket_name, prefix, k, src_filename, p_dst, enable_delete, propagate_error)
+                        was_uploaded=process_file(enable_progress_report, bucket_name, prefix, k, src_filename, p_dst, enable_delete, propagate_error)
+                        if was_uploaded:
+                            count=count+1
     
             except Exception, e:
                 logging.error("Error processing files...(%s)" % str(e))
         else:
             logging.info()
 
+        if count>0:
+            logging.info("Progress> uploaded %s files" % count)
 
         #####################################################
         logging.debug("...sleeping for %s seconds" % polling_interval)
@@ -199,6 +204,7 @@ def simulate(fil, s3key_name, enable_delete, p_dst):
 
 def process_file(enable_progress_report, bucket_name, prefix, k, src_filename, p_dst, enable_delete, propagate_error):
     
+    uploaded=False
     ctx={"src": src_filename, "key": k.name, "bucket": bucket_name, "prefix": prefix}
     
     #1) Upload to S3
@@ -208,6 +214,7 @@ def process_file(enable_progress_report, bucket_name, prefix, k, src_filename, p
         
         if enable_progress_report:
             logging.info("progress: uploaded file %s" % src_filename)
+            uploaded=True
     except:
         if propagate_error:
             report(ctx, {"code":"error", "kind":"upload"})
@@ -243,4 +250,5 @@ def process_file(enable_progress_report, bucket_name, prefix, k, src_filename, p
 
         report(ctx, {"code":code, "kind":"move", "dst":dst_filename})
     
+    return uploaded
 
