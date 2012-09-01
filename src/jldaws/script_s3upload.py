@@ -163,11 +163,9 @@ def run(enable_simulate=False, bucket_name=None,
                     else:
                         k=S3Key(bucket)
                         k.key=s3key_name
-                        was_uploaded=process_file(enable_progress_report, bucket_name, prefix, k, src_filename, p_dst, enable_delete, propagate_error)
+                        was_uploaded=process_file(enable_progress_report, bucket_name, prefix, k, src_filename, p_dst, enable_delete, propagate_error, write_done)
                         if was_uploaded:
                             count=count+1
-                            if write_done:
-                                do_write_done(src_filename)
     
             except Exception, e:
                 logging.error("Error processing files...(%s)" % str(e))
@@ -228,7 +226,7 @@ def simulate(fil, s3key_name, enable_delete, p_dst):
                 pprint_kv(" ! File can't be moved to", p_dst)
 
 
-def process_file(enable_progress_report, bucket_name, prefix, k, src_filename, p_dst, enable_delete, propagate_error):
+def process_file(enable_progress_report, bucket_name, prefix, k, src_filename, p_dst, enable_delete, propagate_error, write_done):
     
     uploaded=False
     ctx={"src": src_filename, "key": k.name, "bucket": bucket_name, "prefix": prefix}
@@ -241,6 +239,10 @@ def process_file(enable_progress_report, bucket_name, prefix, k, src_filename, p
         if enable_progress_report:
             logging.info("progress: uploaded file %s" % src_filename)
             uploaded=True
+            
+        if write_done:
+            do_write_done(src_filename)
+            
     except:
         if propagate_error:
             report(ctx, {"code":"error", "kind":"upload"})
@@ -275,6 +277,7 @@ def process_file(enable_progress_report, bucket_name, prefix, k, src_filename, p
                 logging.info("progress: moved file %s ==> %s" % (src_filename, dst_filename))
 
         report(ctx, {"code":code, "kind":"move", "dst":dst_filename})
+
     
     return uploaded
 
