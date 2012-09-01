@@ -7,7 +7,7 @@ from time import sleep
 
 from tools_logging import pprint_kv
 from tools_s3      import json_string
-from tools_os      import resolve_path, mkdir_p, gen_walk, remove_common_prefix, safe_path_exists
+from tools_os      import resolve_path, mkdir_p, gen_walk, remove_common_prefix, safe_path_exists, touch
 from tools_os      import can_write, rm
 from tools_sys     import retry, move
 
@@ -30,6 +30,7 @@ def run(enable_simulate=False, bucket_name=None,
         ,filename_input_regex=None
         ,key_output_format=None
         ,enable_progress_report=False
+        ,write_done=False
         ,**_):
     
     if key_output_format is not None:
@@ -155,6 +156,8 @@ def run(enable_simulate=False, bucket_name=None,
                         was_uploaded=process_file(enable_progress_report, bucket_name, prefix, k, src_filename, p_dst, enable_delete, propagate_error)
                         if was_uploaded:
                             count=count+1
+                            if write_done:
+                                do_write_done(src_filename)
     
             except Exception, e:
                 logging.error("Error processing files...(%s)" % str(e))
@@ -168,6 +171,12 @@ def run(enable_simulate=False, bucket_name=None,
         logging.debug("...sleeping for %s seconds" % polling_interval)
         sleep(polling_interval)
     
+    
+def do_write_done(src_filename):
+    dfile="%s.done" % src_filename
+    code, _=touch(dfile)
+    if code!="ok":
+        raise Exception("Can't write '.done' file: %s" % dfile)
 
 def gen_s3_key(ireg, ofmt, p_src, filename, prefix):
     _, fn=remove_common_prefix(p_src, filename)

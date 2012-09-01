@@ -4,7 +4,7 @@
 
     @author: Jean-Lou Dupont
 """
-__version__="0.8"
+__version__="0.9"
 import os, sys, argparse
 op=os.path
 
@@ -47,10 +47,11 @@ def main():
         parser.add_argument('-sp', dest='path_source', type=str, help="Path to monitor for new files",   required=True)
         parser.add_argument('-cp', dest='path_check',  type=str, help="Check path", default=None)
         parser.add_argument('-mp', dest='path_moveto', type=str, help="Path to move files upon success", default=None)
-        parser.add_argument('-bs',  dest='num_files',   type=int, help="Maximum number of files to process per interval", default=DEFAULTS["num_files"])
+        parser.add_argument('-bs', dest='num_files',   type=int, help="Maximum number of files to process per interval", default=DEFAULTS["num_files"])
         parser.add_argument('-d',  dest='enable_delete', action="store_true", help="Delete file upon successful upload", default=False)
         parser.add_argument('-epr',dest='enable_progress_report', action="store_true", help="Enable progress report", default=False)
         parser.add_argument('-ext',dest='only_ext',      type=str, help="Only the specified extension", default=None)
+        parser.add_argument('-wdf',dest='write_done',    action="store_true", help="Write '.done' file in source path", default=False)
         
         parser.add_argument('-e',  dest="propagate_error", help="Propagate S3 access errors", action="store_true", default=False)        
         parser.add_argument('-r',  dest="prefix", help="Prefix", type=str, action="store", default=DEFAULTS["prefix"])
