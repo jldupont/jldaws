@@ -254,6 +254,11 @@ def remove_common_prefix(common_prefix, path):
 
 
 def gen_walk(path, max_files=None, only_ext=None):
+    """
+    >>> g=gen_walk("/tmp/test")
+    >>> for f in g:
+    ...    print f
+    """
     count=0
     done=False
     for root, _dirs, files in os.walk(path):
