@@ -71,6 +71,9 @@ def run(enable_simulate=False, bucket_name=None,
             logging.warning("path_check '%s' might be in error..." % path_check)
     
     ### VALIDATE PARAMETERS
+    if not enable_delete and path_moveto is None:
+        raise Exception("either -d or -m must be used")
+    
     if enable_delete and path_moveto is not None:
         raise Exception("-d can't be used with -m")
     
@@ -241,7 +244,7 @@ def process_file(enable_progress_report, bucket_name, prefix, k, src_filename, p
     except:
         if propagate_error:
             report(ctx, {"code":"error", "kind":"upload"})
-        return
+        return False
     
     #2a) Delete
     if enable_delete:
@@ -249,7 +252,7 @@ def process_file(enable_progress_report, bucket_name, prefix, k, src_filename, p
         if not code.startswith("ok"):
             logging.debug("Error deleting: %s (%s)" % (src_filename, msg))
             if not propagate_error:
-                return
+                return True
         else:
             if enable_progress_report:
                 logging.info("progress: deleted file %s" % src_filename)
@@ -266,7 +269,7 @@ def process_file(enable_progress_report, bucket_name, prefix, k, src_filename, p
             mkdir_p(p_dst)
             logging.debug("Error moving: %s ==> %s  (%s)" % (src_filename, dst_filename, msg))
             if not propagate_error:
-                return
+                return True
         else:
             if enable_progress_report:
                 logging.info("progress: moved file %s ==> %s" % (src_filename, dst_filename))
