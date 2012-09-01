@@ -142,13 +142,14 @@ def run(enable_simulate=False, bucket_name=None,
                 
                 if gen is not None:                    
                     for src_filename in gen:
+
+                        if enable_progress_report:
+                            logging.info("Processing file: %s" % src_filename)
                         
                         if write_done:
                             if is_done_file(src_filename):
                                 continue
                         
-                        if enable_progress_report:
-                            logging.info("Processing file: %s" % src_filename)
                         try:          
                             s3key_name=gen_s3_key(ireg, ofmt, p_src, src_filename, prefix)
                         except Exception,e:
@@ -194,8 +195,11 @@ def gen_s3_key(ireg, ofmt, p_src, filename, prefix):
     ### use the input regex and output format string
     ### to generate S3 key
     if ireg is not None:
-        g=ireg.match(fn).groups()
-        fn=ofmt % g
+        try:
+            g=ireg.match(fn).groups()
+            fn=ofmt % g
+        except:
+            raise Exception("Not match found using input regex, filename: %s" % filename)
     
     s="/%s%s" % (prefix, fn)
     return s.replace("//","")
