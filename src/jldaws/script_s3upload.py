@@ -137,34 +137,34 @@ def run(enable_simulate=False, bucket_name=None,
                         
         if path_check is None or path_exists:
             try: 
+                logging.debug("Start processing...")
                 count=0
                 gen=gen_walk(p_src, max_files=num_files,only_ext=only_ext)
-                
-                if gen is not None:                    
-                    for src_filename in gen:
+                    
+                for src_filename in gen:
 
-                        if enable_progress_report:
-                            logging.info("Processing file: %s" % src_filename)
-                        
-                        if write_done:
-                            if is_done_file(src_filename):
-                                continue
-                        
-                        try:          
-                            s3key_name=gen_s3_key(ireg, ofmt, p_src, src_filename, prefix)
-                        except Exception,e:
-                            raise Exception("Error generating S3 key... check your command line parameters... use the 'simulate' facility: %s" % e)
-                        
-                        if enable_simulate:
-                            simulate(src_filename, s3key_name, enable_delete, p_dst)
-                        else:
-                            k=S3Key(bucket)
-                            k.key=s3key_name
-                            was_uploaded=process_file(enable_progress_report, bucket_name, prefix, k, src_filename, p_dst, enable_delete, propagate_error)
-                            if was_uploaded:
-                                count=count+1
-                                if write_done:
-                                    do_write_done(src_filename)
+                    if enable_progress_report:
+                        logging.info("Processing file: %s" % src_filename)
+                    
+                    if write_done:
+                        if is_done_file(src_filename):
+                            continue
+                    
+                    try:          
+                        s3key_name=gen_s3_key(ireg, ofmt, p_src, src_filename, prefix)
+                    except Exception,e:
+                        raise Exception("Error generating S3 key... check your command line parameters... use the 'simulate' facility: %s" % e)
+                    
+                    if enable_simulate:
+                        simulate(src_filename, s3key_name, enable_delete, p_dst)
+                    else:
+                        k=S3Key(bucket)
+                        k.key=s3key_name
+                        was_uploaded=process_file(enable_progress_report, bucket_name, prefix, k, src_filename, p_dst, enable_delete, propagate_error)
+                        if was_uploaded:
+                            count=count+1
+                            if write_done:
+                                do_write_done(src_filename)
     
             except Exception, e:
                 logging.error("Error processing files...(%s)" % str(e))
