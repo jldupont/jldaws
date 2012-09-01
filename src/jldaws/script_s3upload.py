@@ -141,6 +141,10 @@ def run(enable_simulate=False, bucket_name=None,
                 gen=gen_walk(p_src, max_files=num_files,only_ext=only_ext)
                 for src_filename in gen:
                     
+                    if write_done:
+                        if is_done_file(src_filename):
+                            continue
+                    
                     if enable_progress_report:
                         logging.info("Processing file: %s" % src_filename)
                     try:          
@@ -170,7 +174,11 @@ def run(enable_simulate=False, bucket_name=None,
         #####################################################
         logging.debug("...sleeping for %s seconds" % polling_interval)
         sleep(polling_interval)
+
     
+def is_done_file(filename):
+    return filename.endswith("done")
+
     
 def do_write_done(src_filename):
     dfile="%s.done" % src_filename
