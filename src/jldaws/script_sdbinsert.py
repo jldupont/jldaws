@@ -5,6 +5,7 @@
 import logging, os, sys, json
 from time import sleep
 
+from jldaws.tools_os import rm
 from jldaws.tools_sys import retry
 from jldaws.db.skv import SimpleKV
 
@@ -79,20 +80,29 @@ def run(domain_name=None
                 logging.warning("Error processing input: %s" % line)
                 continue
         
+        success=False
         try:
             db.insert(ino["key"], ino["value"], category=ino["category"])
             logging.info("Progress: inserted 1 record")
+            success=True
         except:
             try:
                 ### don't give up too easily
                 sleep(1)
                 db.insert(ino["key"], ino["value"], category=ino["category"])
                 logging.info("Progress: inserted 1 record (after 2nd try)")
+                success=True
             except Exception,e:
                 logging.debug(e)
                 logging.warning("Can't insert in SDB...")
         
-                    
+        if success:
+            trackerfile=ino.get("trackerfile", None)
+            if trackerfile is not None:
+                code, msg=rm(trackerfile)
+                if code!="ok":
+                    logging.warn("Can't delete tracker file %s: %s" % (trackerfile, msg))
+            
                     
             
         

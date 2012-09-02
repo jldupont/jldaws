@@ -32,6 +32,8 @@ Text based format is also supported, tab separated fields:
 $category<tab>$key<tab>$value
 $key<tab>$value
 $key
+
+In JSON mode, the optional 'trackerfile' key is used to delete the said file (path in value field) upon successful insert.
 """ % __version__
 DEFAULTS={
           }

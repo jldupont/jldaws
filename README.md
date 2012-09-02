@@ -14,6 +14,8 @@ Current work items
 History
 =======
 
+0.4.20: jldsdbinsert: added 'trackerfile' option in JSON mode
+
 0.4.13: added 'write done file' to jlds3upload
 
 0.4.7: enhancements to 'jldsdbget'
