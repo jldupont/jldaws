@@ -93,13 +93,10 @@ class SimpleKV():
         rs=self.sdb.select(stm, max_items=limit, consistent_read=consistent_read, next_token=next_token)
         
         if last and rs is not None:
-            try:    return (rs.next(), rs.next_token)
-            except: return (None, None)
+            try:    return rs.next()
+            except: return None
         
-        if rs is not None:
-            return (rs, rs.next_token)
-        
-        return (None, None)
+        return rs
 
     def delete_item(self, item, silent=True):
         try:

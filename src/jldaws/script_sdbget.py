@@ -96,7 +96,7 @@ def get_batch(db, category_name):
     while True:
         try:
             logging.debug("Getting batch...")
-            batch, next_token=db.get_by_category(category=category_name, next_token=next_token, last=False)
+            batch=db.get_by_category(category=category_name, next_token=next_token, last=False, limit=1000)
         except Exception, e:
             logging.warning(e)
             batch=None
@@ -105,9 +105,15 @@ def get_batch(db, category_name):
         if batch is None:
             break     
                
-        entries.append(batch)
+        for entry in batch:
+            entries.append(entry)
+
+        try:        
+            next_token=batch.next_token
+        except:
+            next_token=None
         
-        if next_token is None:
+        if next_token is None or next_token==[]:
             break
         
     return entries
@@ -140,22 +146,22 @@ def workflow_stdin(trigger_topic, db, category_name, just_key, just_key_value):
                 continue
         
         entries=get_batch(db, category_name)
-        
-        for resultset in entries:
-            for entry in resultset:
-                
-                if just_key:
-                    try:    print entry["key"]
-                    except:
-                        logging.debug("Entry without a 'key' field...")
-                        
-                if just_key_value:
-                    try:    print "%s\t%s" % (entry["key"], entry["value"])
-                    except:
-                        logging.debug("Entry without a 'key'/'value' field(s)...")
-                 
-                if not just_key and not just_key_value:       
-                    print entry
+        logging.debug("Batch of %s entries" % len(entries))
+        #for resultset in entries:
+        for entry in entries:
+            
+            if just_key:
+                try:    print entry["key"]
+                except:
+                    logging.debug("Entry without a 'key' field...")
+                    
+            if just_key_value:
+                try:    print "%s\t%s" % (entry["key"], entry["value"])
+                except:
+                    logging.debug("Entry without a 'key'/'value' field(s)...")
+             
+            if not just_key and not just_key_value:       
+                print entry
         
     
 @coroutine            
@@ -174,9 +180,9 @@ def workflow_file(db, category_name, path_dst, path_tmp, keep_most_recent, ext):
         logging.debug("Got batch...")
         
         proc.send(("begin", None))
-        for resultset in entries:
-            for entry in resultset:
-                proc.send(("entry", entry))
+        #for resultset in entries:
+        for entry in entries:
+            proc.send(("entry", entry))
         proc.send(("end", None))
 
     
