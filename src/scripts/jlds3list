@@ -4,7 +4,7 @@
 
     @author: Jean-Lou Dupont
 """
-__version__="0.4"
+__version__="0.5"
 import os, sys, argparse
 op=os.path
 
@@ -41,7 +41,7 @@ def main():
         parser.add_argument('-af',  dest='alternate_format', action="store_true", help="Alternate format", default=False)
         parser.add_argument('-jbn', dest='just_basename',    action="store_true", help="Output just the basename", default=False)
         parser.add_argument('-trt', dest="trigger_topic",  type=str, help="Trigger topic (JSON input)", default=None)
-        parser.add_argument('-es',  dest="execute_start",  type=str, help="Execute at start even when trigger is defined", action="store_true", default=False)
+        parser.add_argument('-es',  dest="execute_start",            help="Execute at start even when trigger is defined", action="store_true", default=False)
         
         from jldaws.script_s3list import run
         from jldaws.tools_sys import process_command_line
