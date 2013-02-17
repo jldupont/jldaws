@@ -27,6 +27,7 @@ def run(enable_simulate=False, bucket_name=None,
         path_source=None, path_moveto=None, path_check=None,
         num_files=5, enable_delete=False, propagate_error=False, prefix=None, polling_interval=None
         ,only_ext=None
+        ,filename_input_full=False
         ,filename_input_regex=None
         ,key_output_format=None
         ,enable_progress_report=False
@@ -38,15 +39,16 @@ def run(enable_simulate=False, bucket_name=None,
             raise Exception("-ifnr and -okf options work in tandem")
     
     if filename_input_regex is not None:
+        
+        if key_output_format is None:
+            raise Exception("Input filename regex specified but no output S3 key format specified")
+        
         logging.info("Compiling input filename regex...")
         try:
             ireg=re.compile(filename_input_regex.strip("'"))
             ofmt=key_output_format.strip("'")
         except:
             raise Exception("Can't compile input filename regex pattern")
-        
-        if key_output_format is None:
-            raise Exception("Input filename regex specified but no output S3 key format specified")
     else:
         ireg=None
         ofmt=None
@@ -154,7 +156,7 @@ def run(enable_simulate=False, bucket_name=None,
                             continue
                     
                     try:          
-                        s3key_name=gen_s3_key(ireg, ofmt, p_src, src_filename, prefix)
+                        s3key_name=gen_s3_key(ireg, ofmt, p_src, src_filename, prefix, filename_input_full)
                     except Exception,e:
                         raise Exception("Error generating S3 key... check your command line parameters... use the 'simulate' facility: %s" % e)
                     
@@ -190,8 +192,12 @@ def do_write_done(src_filename):
     if code!="ok":
         raise Exception("Can't write '.done' file: %s" % dfile)
 
-def gen_s3_key(ireg, ofmt, p_src, filename, prefix):
-    _, fn=remove_common_prefix(p_src, filename)
+def gen_s3_key(ireg, ofmt, p_src, filename, prefix, filename_input_full):
+    
+    if filename_input_full:
+        fn=filename
+    else:
+        _, fn=remove_common_prefix(p_src, filename)
     
     ### use the input regex and output format string
     ### to generate S3 key

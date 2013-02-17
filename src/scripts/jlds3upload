@@ -4,7 +4,7 @@
 
     @author: Jean-Lou Dupont
 """
-__version__="0.13"
+__version__="0.14"
 import os, sys, argparse
 op=os.path
 
@@ -42,24 +42,23 @@ def main():
         import jldaws.do_checks #@UnusedImport
         
         parser=argparse.ArgumentParser(description=DESC, fromfile_prefix_chars='@', formatter_class=argparse.RawTextHelpFormatter)
-        parser.add_argument('-t',  dest='enable_simulate', action="store_true", help="Simulate processing", default=False)
-        parser.add_argument('-bn', dest='bucket_name', type=str, help="Bucket name", required=True)
-        parser.add_argument('-sp', dest='path_source', type=str, help="Path to monitor for new files",   required=True)
-        parser.add_argument('-cp', dest='path_check',  type=str, help="Check path", default=None)
-        parser.add_argument('-mp', dest='path_moveto', type=str, help="Path to move files upon success", default=None)
-        parser.add_argument('-bs', dest='num_files',   type=int, help="Maximum number of files to process per interval", default=DEFAULTS["num_files"])
-        parser.add_argument('-d',  dest='enable_delete', action="store_true", help="Delete file upon successful upload", default=False)
-        parser.add_argument('-epr',dest='enable_progress_report', action="store_true", help="Enable progress report", default=False)
-        parser.add_argument('-ext',dest='only_ext',      type=str, help="Only the specified extension", default=None)
-        parser.add_argument('-wdf',dest='write_done',    action="store_true", help="Write '.done' file in source path", default=False)
+        parser.add_argument('-t',    dest='enable_simulate', action="store_true", help="Simulate processing", default=False)
+        parser.add_argument('-bn',   dest='bucket_name',     type=str, help="Bucket name", required=True)
+        parser.add_argument('-sp',   dest='path_source',     type=str, help="Path to monitor for new files",   required=True)
+        parser.add_argument('-cp',   dest='path_check',      type=str, help="Check path", default=None)
+        parser.add_argument('-mp',   dest='path_moveto',     type=str, help="Path to move files upon success", default=None)
+        parser.add_argument('-bs',   dest='num_files',       type=int, help="Maximum number of files to process per interval", default=DEFAULTS["num_files"])
+        parser.add_argument('-d',    dest='enable_delete',   action="store_true", help="Delete file upon successful upload", default=False)
+        parser.add_argument('-ext',  dest='only_ext',        type=str, help="Only the specified extension", default=None)
+        parser.add_argument('-wdf',  dest='write_done',      action="store_true", help="Write '.done' file in source path", default=False)
+        parser.add_argument('-e',    dest="propagate_error", action="store_true", help="Propagate S3 access errors", default=False)        
+        parser.add_argument('-r',    dest="prefix",          type=str, help="Prefix", action="store", default=DEFAULTS["prefix"])
+        parser.add_argument('-p',    dest="polling_interval", type=int, action="store", help="Polling interval (seconds)", default=DEFAULTS["polling_interval"])
         
-        parser.add_argument('-e',  dest="propagate_error", help="Propagate S3 access errors", action="store_true", default=False)        
-        parser.add_argument('-r',  dest="prefix", help="Prefix", type=str, action="store", default=DEFAULTS["prefix"])
-
-        parser.add_argument('-p',  dest="polling_interval", type=int, action="store", help="Polling interval (seconds)", default=DEFAULTS["polling_interval"])
-        
+        parser.add_argument('-ifnf', dest='filename_input_full',    action="store_true", help="Use full input path name", default=False)
         parser.add_argument('-ifnr', dest="filename_input_regex",   type=str, help="Input filename regex", default=None)
-        parser.add_argument('-okf', dest="key_output_format", type=str, help="Output S3 key format", default=None)
+        parser.add_argument('-okf',  dest="key_output_format",      type=str, help="Output S3 key format", default=None)
+        parser.add_argument('-epr',  dest='enable_progress_report', action="store_true", help="Enable progress report", default=False)        
         
         from jldaws.script_s3upload import run
         from jldaws.tools_sys import process_command_line
