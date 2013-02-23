@@ -3,7 +3,7 @@
     @author: jldupont
 """
 import os, errno,re, tempfile
-import subprocess
+import subprocess, shutil
 
 
 def atomic_write(path, contents, tmppath=None):
@@ -49,6 +49,23 @@ def filter_files(target_ext, files):
     
     return filter(inf, files)
 
+def get_root_dirs(src_path):
+    """
+    Retrieve the directories from src_path
+    Returns the absolute path of each directory
+    >>> get_root_dirs("/tmp")
+    ...
+    """
+    def add_src_path(p):
+        return os.path.join(src_path, p)
+    
+    try:
+        liste=os.listdir(src_path)
+        liste=map(add_src_path, liste)                
+        return ("ok", liste)
+    except:
+        return ("error", None)
+    
 
 def get_root_files(src_path, strip_dirname=False, only_ext=None):
     """
@@ -212,6 +229,14 @@ def rm(path):
         if exc.errno==errno.ENOENT:
             return ('ok', path)
         return ("error", (exc.errno, errno.errorcode[exc.errno]))
+
+def rmdir(path):
+    try:
+        shutil.rmtree(path)
+        return ("ok", None)
+    except Exception,e:
+        return ("error", e)
+
 
 def can_write(path):
     """

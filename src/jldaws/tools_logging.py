@@ -6,6 +6,9 @@ import os, sys, logging, hashlib
 from logging.handlers import SysLogHandler
 import types
 
+PROGRESS=15
+
+
 def pprint_kv(k,v, align=20):
     fmt="%-"+str(align)+"s : %s"
     print fmt % (k, v)
@@ -30,11 +33,16 @@ def setloglevel(level_name):
     
     """
     try:
-        ll=getattr(logging, level_name.upper())
         logger=logging.getLogger()
-        logger.setLevel(ll)
-    except:
-        raise Exception("Invalid log level name: %s" % level_name)
+        
+        name=level_name.upper()
+        if name=="PROGRESS":
+            logger.setLevel(PROGRESS)
+        else:
+            ll=getattr(logging, name)
+            logger.setLevel(ll)
+    except Exception, e:
+        raise Exception("Invalid log level name: %s (%s)" % (level_name, e))
 
 
 class FilterDuplicates(logging.Filter):
@@ -95,6 +103,22 @@ FORMAT='%(asctime)s - '+_get_fname()+' - %(levelname)s - %(message)s'
 
 def setup_basic_logging():    
     logging.basicConfig(level=logging.INFO, format=FORMAT)
+    
+    logging.addLevelName(PROGRESS, "PROGRESS")
+    
+    def levelProgress(self, message, *args, **kwargs):
+        if self.isEnabledFor(PROGRESS):
+            self._log(PROGRESS, message, args, **kwargs)
+    
+    logging.Logger.progress=levelProgress
+    
+    def progress(msg, *args, **kwargs):
+        """
+        Log a message with severity 'INFO' on the root logger.
+        """
+        logging.getLogger().progress(msg, *args, **kwargs)
+
+    logging.progress=progress
     
 
 def setup_syslog():
