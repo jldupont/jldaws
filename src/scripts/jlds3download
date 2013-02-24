@@ -55,9 +55,13 @@ def main():
 
 
     except KeyboardInterrupt:
-        logging.info("..Exiting")
+        logging.info("...exiting")
         sys.exit(0)##no probs
         
+    except Warning, w:
+        logging.warning(str(w))
+        sys.exit(1)
+                
     except Exception,e:
         logging.error(str(e))
         sys.exit(1)

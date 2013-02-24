@@ -114,7 +114,7 @@ def setup_basic_logging():
     
     def progress(msg, *args, **kwargs):
         """
-        Log a message with severity 'INFO' on the root logger.
+        Log a message with severity 'PROGRESS' on the root logger.
         """
         logging.getLogger().progress(msg, *args, **kwargs)
 

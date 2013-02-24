@@ -21,13 +21,14 @@ except:
 
 ########################################################################
 
-DESC="""Generate .done in S3 bucket file upon detection of .done directory - %s
+DESC="""Generate .done file in S3 bucket file upon detection of .done directory - %s
 
 E.g.  source_path/dir1.done  ==> generate 'dir1.done' in -bn bucket ==> delete 'source_path/dir1.done' directory
 
 Use the -d option for deleting the source .done directory when a .done file was successfully generated in the -bn bucket
 Use the -extd option to specify the extension to use for the source directories
 Use the -extf option to specify the extension to use for the generation of files in the -bn bucket 
+Use the -mp option instead -d to move the source directory instead of deleting it
 
 """ % __version__
 DEFAULTS={

@@ -6,6 +6,7 @@ src/jldaws/exceptions.py
 src/jldaws/script_exec.py
 src/jldaws/script_leader.py
 src/jldaws/script_rxsqs.py
+src/jldaws/script_s3done.py
 src/jldaws/script_s3download.py
 src/jldaws/script_s3list.py
 src/jldaws/script_s3notify.py
@@ -49,6 +50,7 @@ src/scripts/jldexec
 src/scripts/jldexec_test
 src/scripts/jldleader
 src/scripts/jldrxsqs
+src/scripts/jlds3done
 src/scripts/jlds3download
 src/scripts/jlds3list
 src/scripts/jlds3notify
