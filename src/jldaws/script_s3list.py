@@ -63,7 +63,7 @@ def run(bucket_name=None, bucket_prefix=None,
         if execute_start:
             if not executed_at_start:
                 executed_at_start=True
-                job(bucket, just_basename, alternate_format, bucket_name, bucket_prefix)
+                job(bucket, just_basename, alternate_format, bucket_name, bucket_prefix, dest_path)
                 continue
 
         if trigger_topic is not None:
