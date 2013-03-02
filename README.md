@@ -4,15 +4,12 @@ For more information, visit http://www.systemical.com/doc/opensource/jldaws
 Tests
 =====
 
-*nose* can be used to run tests.
-
-Current work items
-==================
-
-
+*nose* can be used to run some tests.
 
 History
 =======
+
+0.4.26: added '-dp' option to jlds3list
 
 0.4.25: added 'jlds3done'
 

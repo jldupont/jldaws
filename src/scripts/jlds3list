@@ -4,7 +4,7 @@
 
     @author: Jean-Lou Dupont
 """
-__version__="0.5"
+__version__="0.6"
 import os, sys, argparse
 op=os.path
 
@@ -24,6 +24,7 @@ except:
 DESC="""Simple S3 bucket listing - version %s
 
 Waits for a stdin trigger (either newline or JSON object with "topic" field), fetches the list of files in specified bucket, outputs on stdout.
+If '-dp' is used, 0-length file corresponding to the S3 object key name are generated in the directory path specified.
 """ % __version__
 DEFAULTS={
           }
@@ -36,12 +37,14 @@ def main():
         
         parser=argparse.ArgumentParser(description=DESC, fromfile_prefix_chars='@', formatter_class=argparse.RawTextHelpFormatter)
         
-        parser.add_argument('-bn',  dest='bucket_name',   type=str, help="Bucket name",   required=True)
-        parser.add_argument('-pr',  dest='bucket_prefix', type=str, help="Bucket prefix", default=None)
+        parser.add_argument('-bn',  dest='bucket_name',      type=str,            help="Bucket name",   required=True)
+        parser.add_argument('-pr',  dest='bucket_prefix',    type=str,            help="Bucket prefix", default=None)
         parser.add_argument('-af',  dest='alternate_format', action="store_true", help="Alternate format", default=False)
         parser.add_argument('-jbn', dest='just_basename',    action="store_true", help="Output just the basename", default=False)
-        parser.add_argument('-trt', dest="trigger_topic",  type=str, help="Trigger topic (JSON input)", default=None)
-        parser.add_argument('-es',  dest="execute_start",            help="Execute at start even when trigger is defined", action="store_true", default=False)
+        parser.add_argument('-trt', dest="trigger_topic",    type=str,            help="Trigger topic (JSON input)", default=None)
+        parser.add_argument('-es',  dest="execute_start",    action="store_true", help="Execute at start even when trigger is defined", default=False)
+        
+        parser.add_argument('-dp',  dest='dest_path',        type=str,            help="Destination path",   default=None)
         
         from jldaws.script_s3list import run
         from jldaws.tools_sys import process_command_line

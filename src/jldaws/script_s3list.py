@@ -8,14 +8,24 @@ import boto
 #from boto.s3.key import Key as S3Key
 
 from jldaws.tools_sys import retry
+from jldaws.tools_os  import resolve_path, mkdir_p, touch
 
 def run(bucket_name=None, bucket_prefix=None, 
         alternate_format=False,
         just_basename=False,
         trigger_topic=None,
         execute_start=False,
+        dest_path=None,
         **_
         ):
+
+    if dest_path is not None:
+        logging.info("Resolving dest path: %s" % dest_path)
+        _code, dest_path=resolve_path(dest_path)
+        
+        logging.info("Creating (if necessary) dest path: %s" % dest_path)
+        _code, _msg=mkdir_p(dest_path)
+    
 
     try:
         conn = boto.connect_s3()
@@ -42,8 +52,9 @@ def run(bucket_name=None, bucket_prefix=None,
     ###########
     ppid=os.getppid()
     logging.info("Process pid: %s" % os.getpid())
-    logging.info("Parent pid:  %s" % ppid)
+    logging.info("Parent  pid: %s" % ppid)
     logging.info("Starting loop...")
+    
     while True:
         if os.getppid()!=ppid:
             logging.warning("Parent terminated... exiting")
@@ -88,10 +99,10 @@ def run(bucket_name=None, bucket_prefix=None,
             bucket_name /t bucket_prefix/key
         """
         
-        job(bucket, just_basename, alternate_format, bucket_name, bucket_prefix)
+        job(bucket, just_basename, alternate_format, bucket_name, bucket_prefix, dest_path)
         
 
-def job(bucket, just_basename, alternate_format, bucket_name, bucket_prefix):
+def job(bucket, just_basename, alternate_format, bucket_name, bucket_prefix, dest_path):
     
     if alternate_format:
         _base_format="%s\t" % bucket_name
@@ -106,8 +117,27 @@ def job(bucket, just_basename, alternate_format, bucket_name, bucket_prefix):
     
     for key in liste:
         if not key.name.endswith("/"):
-            if just_basename:
-                print os.path.basename(key.name)
-            else:
-                print "%s%s" % (_base_format, key.name)
+            do_one(dest_path, key.name, just_basename, _base_format)
+            
+    
+def do_one(dest_path, key_name, just_basename, base_format):
+    
+    bn_name=os.path.basename(key_name)
+                
+    if dest_path is None:
+        if just_basename:
+            print bn_name
+        else:
+            print "%s%s" % (base_format, key_name)
+    else:
+        if just_basename:
+            name=bn_name
+        else:
+            name=key_name
+            
+        dfile=os.path.join(dest_path, name)
+        code, msg=touch(dfile)
+        if code!="ok":
+            logging.warning("Can't generate dest file: %s  (%s)" % (dfile, msg))
+            
     

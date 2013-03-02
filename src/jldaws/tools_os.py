@@ -330,6 +330,9 @@ def mkdir_p(path):
     
     This function can be found in the 'sipi' package.
     """
+    if path is None:
+        return ("error", None)
+    
     try:
         os.makedirs(path)
         return ('ok', path)
@@ -341,6 +344,9 @@ def mkdir_p(path):
 
 
 def resolve_path(path):
+    if path is None:
+        return ("error", None)
+    
     try:
         path=os.path.expandvars(path)
         path=os.path.expanduser(path)
